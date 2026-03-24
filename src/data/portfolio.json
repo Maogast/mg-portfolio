@@ -19,29 +19,14 @@
       ]
     },
     {
-      "title": "Education",
-      "type": "cards",
-      "items": [
-        {
-          "title": "Bachelor in Information Technology",
-          "description": "Technical University of Kenya, Nairobi • 2018–2024 • Graduated with honors",
-          "link": "#"
-        },
-        {
-          "title": "Secondary Education (KCSE)",
-          "description": "St. Teresa's Bikeke Boys, Kenya • 2014–2017 • Top overall student, Batch best in CRE & Mathematics",
-          "link": "#"
-        },
-        {
-          "title": "Responsive Web Design Certification",
-          "description": "freeCodeCamp • 2024",
-          "link": "#"
-        },
-        {
-          "title": "Advanced React & TypeScript",
-          "description": "Self-Directed Learning • 2025",
-          "link": "#"
-        }
+         "title": "Education",
+         "type": "cards",
+         "items": [
+    {
+      "title": "Academic & Professional Journey",
+      "description": "Bachelor in Information Technology (Technical University of Kenya, 2018–2024) with honors. Continuous certifications and self‑directed learning in modern web technologies. Full details, including secondary and primary education, certifications, and projects, are available on my main portfolio.",
+      "link": "https://magaredev.vercel.app/"
+    }
       ]
     },
     {
@@ -49,17 +34,15 @@
       "type": "cards",
       "items": [
         {
-          "title": "Devotion & Spiritual Reflection Writing",
-          "description": "Created daily devotionals for Master Guides, youth groups, and prayer bands",
-          "shareOptions": [
-            { "label": "Sample Devotion", "url": "#" }
-          ]
+          "title": "30‑Day Devotion Challenge",
+      "description": "A collection of daily devotions written during the 30‑day challenge, covering themes from Steps to Christ, the Spirit of Prophecy, and personal reflections.",
+      "link": "#devotion-challenge"
         },
         {
            "title": "Steps to Christ – Chapter Summaries",
-      "description": "Complete summaries of each chapter from Steps to Christ by Ellen G. White. Prepared for Master Guide evidence.",
-      "link": "https://docs.google.com/forms/d/e/1FAIpQLSczdeOAquVJPnBALXn0K0LSDfl3fNKRtL-b0TXI50XpucBESg/viewform",
-      "shareOptions": [
+           "description": "Complete summaries of each chapter from Steps to Christ by Ellen G. White. Prepared for Master Guide evidence.",
+           "link": "https://docs.google.com/forms/d/e/1FAIpQLSczdeOAquVJPnBALXn0K0LSDfl3fNKRtL-b0TXI50XpucBESg/viewform",
+           "shareOptions": [
         { "label": "Open in Google Forms", "url": "https://docs.google.com/forms/d/e/1FAIpQLSczdeOAquVJPnBALXn0K0LSDfl3fNKRtL-b0TXI50XpucBESg/viewform" }
           ]
         }

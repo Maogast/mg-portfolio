@@ -115,7 +115,16 @@ export default function Home() {
       <main className="container mx-auto px-4 py-12 max-w-4xl">
         {/* Hero */}
         <section className="text-center mb-16 animate-fade-in">
-          <h1 className="text-5xl md:text-6xl font-bold mb-2 bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+          <div className="flex justify-center mb-6">
+            <Image
+              src="/images/profile.jpg"
+              alt={data.name}
+              width={128}
+              height={128}
+              className="rounded-full border-4 border-blue-500 shadow-lg"
+            />
+          </div>
+          <h1 className="text-5xl md:text-6xl font-bold mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
             {data.name}
           </h1>
           <p className="text-xl text-gray-600 mb-4">{data.tagline}</p>
@@ -135,7 +144,12 @@ export default function Home() {
 
         {/* Sections */}
         {(data.sections as Section[]).map((section, idx) => (
-          <section key={idx} className="mb-16 animate-fade-in" style={{ animationDelay: `${idx * 100}ms` }}>
+          <section
+            key={idx}
+            id={section.type === 'devotion-list' ? 'devotion-challenge' : undefined}
+            className="mb-16 animate-fade-in"
+            style={{ animationDelay: `${idx * 100}ms` }}
+          >
             <h2 className="text-3xl font-bold border-b-2 border-blue-200 pb-2 mb-6 inline-block">
               {section.title}
             </h2>
