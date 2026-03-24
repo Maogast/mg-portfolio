@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Image from 'next/image';
 import data from '@/data/portfolio.json';
 
-// ----- Types -----
+// ----- Types (unchanged) -----
 type ShareOption = { label: string; url: string };
 type EventItem = { name: string; date: string; description: string };
 type BaseItem = { title: string };
@@ -16,7 +16,6 @@ type ItemWithLink = BaseItem & { description?: string; link: string };
 type ItemSimple = string;
 type PortfolioItem = ItemSimple | ItemWithShare | ItemWithEvents | ItemWithImages | ItemWithLink;
 
-// Type for devotion items
 type DevotionItem = {
   date: string;
   bibleReading: string;
@@ -33,84 +32,98 @@ type Section = {
   items: PortfolioItem[] | DevotionItem[];
 };
 
-// Type guards
+// Type guards (unchanged)
 function isListSection(section: unknown): section is Section & { type: 'list' } {
-  return (
-    typeof section === 'object' &&
-    section !== null &&
-    'type' in section &&
-    (section as { type: string }).type === 'list'
-  );
+  return typeof section === 'object' && section !== null && 'type' in section && (section as { type: string }).type === 'list';
 }
-
 function isCardsSection(section: unknown): section is Section & { type: 'cards' } {
-  return (
-    typeof section === 'object' &&
-    section !== null &&
-    'type' in section &&
-    (section as { type: string }).type === 'cards'
-  );
+  return typeof section === 'object' && section !== null && 'type' in section && (section as { type: string }).type === 'cards';
 }
-
 function isDevotionListSection(section: Section): section is Section & { type: 'devotion-list'; items: DevotionItem[] } {
   return section.type === 'devotion-list';
 }
-
-function isStringItem(item: PortfolioItem): item is string {
-  return typeof item === 'string';
-}
-
-function hasShareOptions(item: PortfolioItem): item is ItemWithShare {
-  return typeof item === 'object' && 'shareOptions' in item;
-}
-
-function hasEvents(item: PortfolioItem): item is ItemWithEvents {
-  return typeof item === 'object' && 'events' in item;
-}
-
-function hasImages(item: PortfolioItem): item is ItemWithImages {
-  return typeof item === 'object' && 'images' in item;
-}
-
-function hasLink(item: PortfolioItem): item is ItemWithLink {
-  return typeof item === 'object' && 'link' in item;
-}
-
+function isStringItem(item: PortfolioItem): item is string { return typeof item === 'string'; }
+function hasShareOptions(item: PortfolioItem): item is ItemWithShare { return typeof item === 'object' && 'shareOptions' in item; }
+function hasEvents(item: PortfolioItem): item is ItemWithEvents { return typeof item === 'object' && 'events' in item; }
+function hasImages(item: PortfolioItem): item is ItemWithImages { return typeof item === 'object' && 'images' in item; }
+function hasLink(item: PortfolioItem): item is ItemWithLink { return typeof item === 'object' && 'link' in item; }
 function hasDescription(item: PortfolioItem): item is Exclude<PortfolioItem, string> & { description?: string } {
   return typeof item === 'object' && 'description' in item;
 }
-
-function getTitle(item: PortfolioItem): string {
-  return isStringItem(item) ? item : item.title;
-}
+function getTitle(item: PortfolioItem): string { return isStringItem(item) ? item : item.title; }
 
 export default function Home() {
   const [selectedDevotion, setSelectedDevotion] = useState<DevotionItem | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isListModalOpen, setIsListModalOpen] = useState(false);
+  const [showBackToTop, setShowBackToTop] = useState(false);
+
+  // Dark mode – lazy initializer to avoid extra effect
+  const [darkMode, setDarkMode] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('darkMode');
+      if (stored !== null) return JSON.parse(stored);
+      return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    }
+    return false;
+  });
+
+  // Apply dark mode class and store preference
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    localStorage.setItem('darkMode', JSON.stringify(darkMode));
+  }, [darkMode]);
+
+  // Back-to-top visibility
+  useEffect(() => {
+    const handleScroll = () => setShowBackToTop(window.scrollY > 300);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const openDetailModal = (devotion: DevotionItem) => {
     setSelectedDevotion(devotion);
     setIsDetailModalOpen(true);
   };
-
   const closeDetailModal = () => {
     setIsDetailModalOpen(false);
     setSelectedDevotion(null);
   };
-
   const openListModal = () => setIsListModalOpen(true);
   const closeListModal = () => setIsListModalOpen(false);
 
-  // Find the devotion section (there should be only one)
   const devotionSection = (data.sections as Section[]).find(s => s.type === 'devotion-list') as Section & { type: 'devotion-list'; items: DevotionItem[] } | undefined;
 
   return (
-    <div className="min-h-screen bg-white text-gray-800">
+    <div className="min-h-screen bg-white text-gray-800 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300">
       <Head>
         <title>{data.name} – Master Guide Portfolio</title>
         <meta name="description" content="Master Guide portfolio" />
       </Head>
+
+      {/* Dark Mode Toggle */}
+      <button
+        onClick={() => setDarkMode(!darkMode)}
+        className="fixed top-4 right-4 z-50 p-2 rounded-full bg-gray-200 dark:bg-gray-700 shadow-md hover:shadow-lg transition-all focus:outline-none focus:ring-2 focus:ring-blue-500"
+        aria-label="Toggle dark mode"
+      >
+        {darkMode ? '☀️' : '🌙'}
+      </button>
+
+      {/* Back to Top Button */}
+      {showBackToTop && (
+        <button
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          className="fixed bottom-6 right-6 z-50 p-3 rounded-full bg-blue-600 text-white shadow-lg hover:bg-blue-700 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500"
+          aria-label="Back to top"
+        >
+          ↑
+        </button>
+      )}
 
       <main className="container mx-auto px-4 py-12 max-w-4xl">
         {/* Hero */}
@@ -124,12 +137,12 @@ export default function Home() {
               className="rounded-full border-4 border-blue-500 shadow-lg"
             />
           </div>
-          <h1 className="text-5xl md:text-6xl font-bold mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+          <h1  className="text-5xl md:text-6xl font-bold mb-2 bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
             {data.name}
           </h1>
-          <p className="text-xl text-gray-600 mb-4">{data.tagline}</p>
-          <p className="text-gray-700 leading-relaxed max-w-2xl mx-auto">{data.about}</p>
-          <blockquote className="italic mt-6 border-l-4 border-blue-500 pl-4 text-gray-600 max-w-xl mx-auto">
+          <p className="text-xl text-gray-600 dark:text-gray-400 mb-4">{data.tagline}</p>
+          <p className="text-gray-700 dark:text-gray-300 leading-relaxed max-w-2xl mx-auto">{data.about}</p>
+          <blockquote className="italic mt-6 border-l-4 border-blue-500 pl-4 text-gray-600 dark:text-gray-400 max-w-xl mx-auto">
             {data.mission}
           </blockquote>
         </section>
@@ -138,7 +151,7 @@ export default function Home() {
         {data.dedication && (
           <section className="mb-16 text-center animate-fade-in animation-delay-200">
             <h2 className="text-2xl font-semibold mb-2">Dedication</h2>
-            <p className="text-gray-600">{data.dedication}</p>
+            <p className="text-gray-600 dark:text-gray-400">{data.dedication}</p>
           </section>
         )}
 
@@ -150,14 +163,14 @@ export default function Home() {
             className="mb-16 animate-fade-in"
             style={{ animationDelay: `${idx * 100}ms` }}
           >
-            <h2 className="text-3xl font-bold border-b-2 border-blue-200 pb-2 mb-6 inline-block">
+            <h2 className="text-3xl font-bold border-b-2 border-blue-200 dark:border-blue-700 pb-2 mb-6 inline-block">
               {section.title}
             </h2>
 
             {isListSection(section) && (
               <ul className="grid grid-cols-1 md:grid-cols-2 gap-2 list-disc list-inside">
                 {(section.items as string[]).map((item, i) => (
-                  <li key={i} className="text-gray-700">{item}</li>
+                  <li key={i} className="text-gray-700 dark:text-gray-300">{item}</li>
                 ))}
               </ul>
             )}
@@ -165,15 +178,21 @@ export default function Home() {
             {isCardsSection(section) && (
               <div className="space-y-6">
                 {(section.items as PortfolioItem[]).map((item, i) => (
-                  <div key={i} className="border border-gray-100 rounded-xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 bg-white">
+                  <div
+                    key={i}
+                    className="border border-gray-100 dark:border-gray-800 rounded-xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 bg-white dark:bg-gray-800"
+                  >
                     <h3 className="text-xl font-semibold mb-2">{getTitle(item)}</h3>
 
                     {hasDescription(item) && item.description && (
-                      <p className="text-gray-600 mb-3">{item.description}</p>
+                      <p className="text-gray-600 dark:text-gray-400 mb-3">{item.description}</p>
                     )}
 
                     {hasLink(item) && (
-                      <a href={item.link} className="inline-block mt-2 text-blue-600 hover:text-blue-700 font-medium transition">
+                      <a
+                        href={item.link}
+                        className="inline-block mt-2 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium transition focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
+                      >
                         Learn more →
                       </a>
                     )}
@@ -184,7 +203,7 @@ export default function Home() {
                           <a
                             key={j}
                             href={opt.url}
-                            className="inline-block bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full text-sm transition"
+                            className="inline-block bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 px-3 py-1 rounded-full text-sm transition focus:outline-none focus:ring-2 focus:ring-blue-500"
                           >
                             {opt.label}
                           </a>
@@ -195,10 +214,10 @@ export default function Home() {
                     {hasEvents(item) && (
                       <div className="mt-4 space-y-3">
                         {item.events.map((event, k) => (
-                          <div key={k} className="bg-gray-50 p-3 rounded-lg">
+                          <div key={k} className="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
                             <p className="font-medium">{event.name}</p>
-                            <p className="text-sm text-gray-500">{event.date}</p>
-                            <p className="text-gray-600">{event.description}</p>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">{event.date}</p>
+                            <p className="text-gray-600 dark:text-gray-300">{event.description}</p>
                           </div>
                         ))}
                       </div>
@@ -228,7 +247,7 @@ export default function Home() {
               <div className="text-center mt-8">
                 <button
                   onClick={openListModal}
-                  className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition transform hover:scale-105"
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   View All 30‑Day Devotions →
                 </button>
@@ -244,11 +263,11 @@ export default function Home() {
             onClick={closeDetailModal}
           >
             <div
-              className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 shadow-xl"
+              className="bg-white dark:bg-gray-800 rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 shadow-xl"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex justify-between items-start mb-4">
-                <h2 className="text-2xl font-bold">
+                <h2 className="text-2xl font-bold dark:text-white">
                   {new Date(selectedDevotion.date).toLocaleDateString('en-GB', {
                     day: 'numeric',
                     month: 'long',
@@ -257,37 +276,37 @@ export default function Home() {
                 </h2>
                 <button
                   onClick={closeDetailModal}
-                  className="text-gray-500 hover:text-gray-800 text-2xl transition"
+                  className="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 text-2xl transition focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
                 >
                   &times;
                 </button>
               </div>
-              <div className="space-y-4">
+              <div className="space-y-4 text-gray-700 dark:text-gray-300">
                 <div>
                   <h3 className="font-semibold text-lg">📖 Bible Reading</h3>
-                  <p className="text-gray-700">{selectedDevotion.bibleReading}</p>
+                  <p>{selectedDevotion.bibleReading}</p>
                 </div>
                 {selectedDevotion.materialRead && (
                   <div>
                     <h3 className="font-semibold text-lg">📚 Material Read</h3>
-                    <p className="text-gray-700">{selectedDevotion.materialRead}</p>
+                    <p>{selectedDevotion.materialRead}</p>
                   </div>
                 )}
                 <div>
                   <h3 className="font-semibold text-lg">💭 Reflection</h3>
-                  <p className="text-gray-700 whitespace-pre-wrap">{selectedDevotion.reflection}</p>
+                  <p className="whitespace-pre-wrap">{selectedDevotion.reflection}</p>
                 </div>
                 <div>
                   <h3 className="font-semibold text-lg">✅ Application</h3>
-                  <p className="text-gray-700 whitespace-pre-wrap">{selectedDevotion.application}</p>
+                  <p className="whitespace-pre-wrap">{selectedDevotion.application}</p>
                 </div>
                 <div>
                   <h3 className="font-semibold text-lg">🙏 Prayer Focus</h3>
-                  <p className="text-gray-700 whitespace-pre-wrap">{selectedDevotion.prayerFocus}</p>
+                  <p className="whitespace-pre-wrap">{selectedDevotion.prayerFocus}</p>
                 </div>
                 <div>
                   <h3 className="font-semibold text-lg">🎵 Song</h3>
-                  <p className="text-gray-700">{selectedDevotion.song}</p>
+                  <p>{selectedDevotion.song}</p>
                 </div>
               </div>
             </div>
@@ -301,14 +320,14 @@ export default function Home() {
             onClick={closeListModal}
           >
             <div
-              className="bg-white rounded-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto p-6 shadow-xl"
+              className="bg-white dark:bg-gray-800 rounded-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto p-6 shadow-xl"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex justify-between items-start mb-4">
-                <h2 className="text-2xl font-bold">30‑Day Devotion Challenge</h2>
+                <h2 className="text-2xl font-bold dark:text-white">30‑Day Devotion Challenge</h2>
                 <button
                   onClick={closeListModal}
-                  className="text-gray-500 hover:text-gray-800 text-2xl transition"
+                  className="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 text-2xl transition focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
                 >
                   &times;
                 </button>
@@ -319,7 +338,7 @@ export default function Home() {
                   return (
                     <div
                       key={i}
-                      className="border border-gray-100 rounded-lg p-4 shadow-sm hover:shadow-md transition cursor-pointer"
+                      className="border border-gray-100 dark:border-gray-700 rounded-lg p-4 shadow-sm hover:shadow-md transition cursor-pointer"
                       onClick={() => {
                         closeListModal();
                         openDetailModal(devotion);
@@ -327,17 +346,17 @@ export default function Home() {
                     >
                       <div className="flex justify-between items-start">
                         <div>
-                          <h3 className="text-lg font-semibold">
+                          <h3 className="text-lg font-semibold dark:text-white">
                             {new Date(devotion.date).toLocaleDateString('en-GB', {
                               day: 'numeric',
                               month: 'long',
                               year: 'numeric',
                             })}
                           </h3>
-                          <p className="text-gray-600 text-sm mt-1">
+                          <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
                             📖 {devotion.bibleReading}
                           </p>
-                          <p className="text-gray-700 mt-2 line-clamp-2">
+                          <p className="text-gray-700 dark:text-gray-300 mt-2 line-clamp-2">
                             {devotion.reflection}
                           </p>
                         </div>
@@ -351,7 +370,7 @@ export default function Home() {
           </div>
         )}
 
-        <footer className="text-center text-gray-500 text-sm mt-20 pt-8 border-t">
+        <footer className="text-center text-gray-500 dark:text-gray-400 text-sm mt-20 pt-8 border-t dark:border-gray-800">
           © {new Date().getFullYear()} {data.name} – Master Guide Portfolio
         </footer>
       </main>
