@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, } from 'react';
+import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Image from 'next/image';
 import data from '@/data/portfolio.json';
@@ -65,7 +65,11 @@ export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
 
-  // Dark mode – lazy initializer
+  // Lightbox state
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+
+  // Dark mode – lazy initializer (client only)
   const [darkMode, setDarkMode] = useState(() => {
     if (typeof window !== 'undefined') {
       const stored = localStorage.getItem('darkMode');
@@ -74,6 +78,14 @@ export default function Home() {
     }
     return false;
   });
+
+  // Track if component is mounted (to avoid hydration mismatch)
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMounted(true);
+  }, []);
 
   // Apply dark mode class and store preference
   useEffect(() => {
@@ -130,9 +142,19 @@ export default function Home() {
   const openListModal = () => setIsListModalOpen(true);
   const closeListModal = () => setIsListModalOpen(false);
 
+  // Lightbox functions
+  const openImageModal = (src: string) => {
+    setSelectedImage(src);
+    setIsImageModalOpen(true);
+  };
+  const closeImageModal = () => {
+    setIsImageModalOpen(false);
+    setSelectedImage(null);
+  };
+
   const devotionSection = (data.sections as Section[]).find(s => s.type === 'devotion-list') as Section & { type: 'devotion-list'; items: DevotionItem[] } | undefined;
 
-  // Build navigation items: Hero, Dedication (if exists), all other sections
+  // Build navigation items
   const navItems = [
     { id: 'hero', label: 'Home' },
     ...(data.dedication ? [{ id: 'dedication', label: 'Dedication' }] : []),
@@ -150,9 +172,8 @@ export default function Home() {
       </Head>
 
       {/* Sticky Header */}
-      <header className="sticky top-0 z-40 bg-white/30 dark:bg-gray-900/30 backdrop-blur-md shadow-sm transition-all">
+      <header className="sticky top-0 z-40 bg-white/40 dark:bg-gray-900/40 backdrop-blur-lg shadow-sm transition-all">
         <div className="container mx-auto px-4 max-w-4xl flex items-center justify-between py-3">
-          {/* Logo / Name */}
           <a
             href="#hero"
             onClick={(e) => handleNavClick(e, 'hero')}
@@ -161,7 +182,6 @@ export default function Home() {
             {data.name.split(' ')[0]}
           </a>
 
-          {/* Desktop Navigation */}
           <nav className="hidden md:flex space-x-6">
             {navItems.map((item) => (
               <a
@@ -179,13 +199,18 @@ export default function Home() {
             ))}
           </nav>
 
-          {/* Mobile Hamburger */}
+          {/* Mobile hamburger button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="md:hidden p-2 rounded-md bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 mr-12"
             aria-label="Toggle menu"
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg
+              className="w-6 h-6 text-gray-800 dark:text-white"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
               {mobileMenuOpen ? (
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               ) : (
@@ -195,7 +220,6 @@ export default function Home() {
           </button>
         </div>
 
-        {/* Mobile Menu Dropdown */}
         {mobileMenuOpen && (
           <nav className="md:hidden bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 py-2 px-4">
             {navItems.map((item) => (
@@ -216,13 +240,13 @@ export default function Home() {
         )}
       </header>
 
-      {/* Dark Mode Toggle (keep separate, higher z-index) */}
+      {/* Dark Mode Toggle – with hydration-safe icon */}
       <button
         onClick={() => setDarkMode(!darkMode)}
         className="fixed top-4 right-4 z-50 p-2 rounded-full bg-gray-200 dark:bg-gray-700 shadow-md hover:shadow-lg transition-all focus:outline-none focus:ring-2 focus:ring-blue-500"
         aria-label="Toggle dark mode"
       >
-        {darkMode ? '☀️' : '🌙'}
+        {mounted ? (darkMode ? '☀️' : '🌙') : '🌓'}
       </button>
 
       {/* Back to Top Button */}
@@ -266,7 +290,7 @@ export default function Home() {
           </section>
         )}
 
-        {/* Sections */}
+        {/* Sections – unchanged */}
         {(data.sections as Section[]).map((section, idx) => {
           const sectionId = section.type === 'devotion-list' ? 'devotion-challenge' : slugify(section.title);
           return (
@@ -339,13 +363,17 @@ export default function Home() {
                       {hasImages(item) && (
                         <div className="mt-4 flex gap-2 overflow-x-auto pb-2">
                           {item.images.map((src, k) => (
-                            <div key={k} className="relative h-32 w-32 shrink-0 rounded-lg overflow-hidden">
+                            <div
+                              key={k}
+                              className="relative h-32 w-32 shrink-0 rounded-lg overflow-hidden cursor-pointer group"
+                              onClick={() => openImageModal(src)}
+                            >
                               <Image
                                 src={src}
                                 alt={`${getTitle(item)} image ${k + 1}`}
                                 fill
                                 sizes="128px"
-                                className="object-cover hover:scale-105 transition duration-300"
+                                className="object-cover transition duration-300 group-hover:scale-105"
                               />
                             </div>
                           ))}
@@ -370,7 +398,7 @@ export default function Home() {
           );
         })}
 
-        {/* Modals (unchanged) */}
+        {/* Modals – unchanged */}
         {isDetailModalOpen && selectedDevotion && (
           <div
             className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
@@ -479,6 +507,35 @@ export default function Home() {
                   );
                 })}
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* Lightbox Modal for Images */}
+        {isImageModalOpen && selectedImage && (
+          <div
+            className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4"
+            onClick={closeImageModal}
+          >
+            <div
+              className="relative w-full h-full max-w-5xl max-h-[90vh]"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                onClick={closeImageModal}
+                className="absolute top-4 right-4 text-white text-3xl hover:text-gray-300 transition z-10 focus:outline-none focus:ring-2 focus:ring-white rounded-full p-1"
+                aria-label="Close image"
+              >
+                &times;
+              </button>
+              <Image
+                src={selectedImage}
+                alt="Full size"
+                fill
+                sizes="100vw"
+                className="object-contain"
+                priority={false}
+              />
             </div>
           </div>
         )}

@@ -58,7 +58,7 @@
         },
         {
           "title": "Prayer Ministry Leadership",
-          "description": "Leading weekly intercessory prayer sessions and spiritual warfare initiatives (2024–Present)"
+          "description": "Leading Audience Chamber Prayer Band weekly intercessory prayer sessions and spiritual warfare initiatives (2024–Present)"
         }
       ]
     },
@@ -78,10 +78,19 @@
         {
           "title": "Steps to Christ",
           "description": "Daily devotion and chapter summaries",
-          "shareOptions": [
-            { "label": "Chapter Summaries", "url": "#" },
-            { "label": "Personal Reflections", "url": "#" }
-          ]
+           "images": [
+           "/images/steps-to-christ/steps-1.jpg",
+           "/images/steps-to-christ/steps-3.jpg",
+           "/images/steps-to-christ/steps-5.jpg",
+           "/images/steps-to-christ/steps-2.jpg",
+           "/images/steps-to-christ/steps-4.jpg",
+           "/images/steps-to-christ/steps-6.jpg"
+  
+          ],
+         "shareOptions": [
+         { "label": "Chapter Summaries", "link": "#" },
+         { "label": "Personal Reflections", "url": "#devotion-challenge" }
+        ]
         },
         {
           "title": "The Desire of Ages",
@@ -115,14 +124,14 @@
           "title": "Kasarani Prayer Cell Vespers",
           "events": [
             {
-              "name": "Weekly Vespers at Elder Danstan's Home",
+              "name": "Weekly Vespers Kasa Homes",
               "date": "Ongoing",
               "description": "Gathering for prayer, fellowship, and planning the way forward for cell meetings"
             },
             {
               "name": "Prayer Band Revival",
               "date": "March 2026",
-              "description": "Re-establishing prayer band meetings every Sabbath morning at Zimmerman SDA"
+              "description": "Re-establishing prayer band meetings every Sabbath morning from 7:00 AM - 8:00 AM at Zimmerman SDA"
             }
           ]
         },
