@@ -24,7 +24,7 @@
          "items": [
     {
       "title": "Academic & Professional Journey",
-      "description": "Bachelor in Information Technology (Technical University of Kenya, 2018–2024) with honors. Continuous certifications and self‑directed learning in modern web technologies. Full details, including secondary and primary education, certifications, and projects, are available on my main portfolio.",
+      "description": "Bachelor in Information Technology (Technical University of Kenya, 2018–2024) with honors. Software developer and prompt engineer specializing in Next.js, React, and Java. Continuous certifications and self‑directed learning in modern web technologies. Full details, including secondary and primary education, certifications, and projects, are available on my main portfolio.",
       "link": "https://magaredev.vercel.app/"
     }
       ]
@@ -66,7 +66,12 @@
       "title": "Lifestyle Development (Stature)",
       "type": "cards",
       "items": [
-        { "title": "Physical Fitness", "description": "Regular swimming for fitness and mental clarity" },
+        { "title": "Physical Fitness", 
+          "description": "Regular swimming for fitness and mental clarity",
+          "shareOptions": [
+            { "label": "Watch Steve Swimming", "url": "/videos/swimming-1.mp4" }
+          ]
+        },
         { "title": "Guitar Performance & Composition", "description": "Creating and performing music across various genres" },
         { "title": "Singing", "description": "Vocal expression in solo and group settings, Chorister Lead at Zimmerman SDA Church" }
       ]
@@ -161,8 +166,8 @@
             
           ],
           "shareOptions": [
-            { "label": "Watch Video", "url": "/videos/serepta-clip.mp4" },
-            { "label": "Watch Video", "url": "/videos/serepta-clip2.mp4" },
+            { "label": "Watch Steve singing with children", "url": "/videos/serepta-clip.mp4" },
+            { "label": "Watch Steve drawing", "url": "/videos/serepta-clip2.mp4" },
             { "label": "Watch Video", "url": "/videos/serepta-clip1.mp4" }
           ]
         }
