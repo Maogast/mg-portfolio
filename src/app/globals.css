@@ -2,24 +2,14 @@
 
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+/* Enable class-based dark mode for Tailwind v4 */
+@custom-variant dark (&:where(.dark, .dark *));
 
 body {
-  background: var(--background);
-  color: var(--foreground);
   font-family: 'Inter', sans-serif;
 }
 
+/* Custom utilities */
 .line-clamp-2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;
