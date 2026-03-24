@@ -156,10 +156,14 @@
           "images": [
             "/images/serepta-1.jpg",
             "/images/serepta-2.jpg",
-            "/images/serepta-3.jpg"
+            "/images/serepta-3.jpg",
+            "/images/serepta-4.jpg"
+            
           ],
           "shareOptions": [
-            { "label": "Watch Video", "url": "/videos/serepta-clip.mp4" }
+            { "label": "Watch Video", "url": "/videos/serepta-clip.mp4" },
+            { "label": "Watch Video", "url": "/videos/serepta-clip2.mp4" },
+            { "label": "Watch Video", "url": "/videos/serepta-clip1.mp4" }
           ]
         }
       ]
