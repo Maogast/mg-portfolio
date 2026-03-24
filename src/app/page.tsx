@@ -112,20 +112,22 @@ export default function Home() {
         <meta name="description" content="Master Guide portfolio" />
       </Head>
 
-      <main className="container mx-auto px-4 py-12 max-w-3xl">
+      <main className="container mx-auto px-4 py-12 max-w-4xl">
         {/* Hero */}
-        <section className="text-center mb-16">
-          <h1 className="text-4xl font-bold mb-2">{data.name}</h1>
+        <section className="text-center mb-16 animate-fade-in">
+          <h1 className="text-5xl md:text-6xl font-bold mb-2 bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            {data.name}
+          </h1>
           <p className="text-xl text-gray-600 mb-4">{data.tagline}</p>
-          <p className="text-gray-700 leading-relaxed">{data.about}</p>
-          <blockquote className="italic mt-6 border-l-4 border-blue-500 pl-4 text-gray-600">
+          <p className="text-gray-700 leading-relaxed max-w-2xl mx-auto">{data.about}</p>
+          <blockquote className="italic mt-6 border-l-4 border-blue-500 pl-4 text-gray-600 max-w-xl mx-auto">
             {data.mission}
           </blockquote>
         </section>
 
         {/* Dedication */}
         {data.dedication && (
-          <section className="mb-16 text-center">
+          <section className="mb-16 text-center animate-fade-in animation-delay-200">
             <h2 className="text-2xl font-semibold mb-2">Dedication</h2>
             <p className="text-gray-600">{data.dedication}</p>
           </section>
@@ -133,8 +135,8 @@ export default function Home() {
 
         {/* Sections */}
         {(data.sections as Section[]).map((section, idx) => (
-          <section key={idx} className="mb-16">
-            <h2 className="text-2xl font-bold border-b border-gray-300 pb-2 mb-6">
+          <section key={idx} className="mb-16 animate-fade-in" style={{ animationDelay: `${idx * 100}ms` }}>
+            <h2 className="text-3xl font-bold border-b-2 border-blue-200 pb-2 mb-6 inline-block">
               {section.title}
             </h2>
 
@@ -149,26 +151,26 @@ export default function Home() {
             {isCardsSection(section) && (
               <div className="space-y-6">
                 {(section.items as PortfolioItem[]).map((item, i) => (
-                  <div key={i} className="border rounded-lg p-4 shadow-sm hover:shadow-md transition">
-                    <h3 className="text-xl font-semibold mb-1">{getTitle(item)}</h3>
+                  <div key={i} className="border border-gray-100 rounded-xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 bg-white">
+                    <h3 className="text-xl font-semibold mb-2">{getTitle(item)}</h3>
 
                     {hasDescription(item) && item.description && (
-                      <p className="text-gray-600 mb-2">{item.description}</p>
+                      <p className="text-gray-600 mb-3">{item.description}</p>
                     )}
 
                     {hasLink(item) && (
-                      <a href={item.link} className="text-blue-600 hover:underline">
+                      <a href={item.link} className="inline-block mt-2 text-blue-600 hover:text-blue-700 font-medium transition">
                         Learn more →
                       </a>
                     )}
 
                     {hasShareOptions(item) && (
-                      <div className="mt-2 flex flex-wrap gap-2">
+                      <div className="mt-3 flex flex-wrap gap-2">
                         {item.shareOptions.map((opt, j) => (
                           <a
                             key={j}
                             href={opt.url}
-                            className="text-sm bg-gray-100 px-3 py-1 rounded-full hover:bg-gray-200"
+                            className="inline-block bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full text-sm transition"
                           >
                             {opt.label}
                           </a>
@@ -179,7 +181,7 @@ export default function Home() {
                     {hasEvents(item) && (
                       <div className="mt-4 space-y-3">
                         {item.events.map((event, k) => (
-                          <div key={k} className="bg-gray-50 p-3 rounded">
+                          <div key={k} className="bg-gray-50 p-3 rounded-lg">
                             <p className="font-medium">{event.name}</p>
                             <p className="text-sm text-gray-500">{event.date}</p>
                             <p className="text-gray-600">{event.description}</p>
@@ -189,15 +191,15 @@ export default function Home() {
                     )}
 
                     {hasImages(item) && (
-                      <div className="mt-3 flex gap-2 overflow-x-auto">
+                      <div className="mt-4 flex gap-2 overflow-x-auto pb-2">
                         {item.images.map((src, k) => (
-                          <div key={k} className="relative h-32 w-32 shrink-0">
+                          <div key={k} className="relative h-32 w-32 shrink-0 rounded-lg overflow-hidden">
                             <Image
                               src={src}
                               alt={`${getTitle(item)} image ${k + 1}`}
                               fill
                               sizes="128px"
-                              className="object-cover rounded"
+                              className="object-cover hover:scale-105 transition duration-300"
                             />
                           </div>
                         ))}
@@ -209,10 +211,10 @@ export default function Home() {
             )}
 
             {isDevotionListSection(section) && (
-              <div className="text-center">
+              <div className="text-center mt-8">
                 <button
                   onClick={openListModal}
-                  className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition"
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition transform hover:scale-105"
                 >
                   View All 30‑Day Devotions →
                 </button>
@@ -228,7 +230,7 @@ export default function Home() {
             onClick={closeDetailModal}
           >
             <div
-              className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6"
+              className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 shadow-xl"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex justify-between items-start mb-4">
@@ -241,7 +243,7 @@ export default function Home() {
                 </h2>
                 <button
                   onClick={closeDetailModal}
-                  className="text-gray-500 hover:text-gray-800 text-2xl"
+                  className="text-gray-500 hover:text-gray-800 text-2xl transition"
                 >
                   &times;
                 </button>
@@ -285,14 +287,14 @@ export default function Home() {
             onClick={closeListModal}
           >
             <div
-              className="bg-white rounded-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto p-6"
+              className="bg-white rounded-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto p-6 shadow-xl"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex justify-between items-start mb-4">
                 <h2 className="text-2xl font-bold">30‑Day Devotion Challenge</h2>
                 <button
                   onClick={closeListModal}
-                  className="text-gray-500 hover:text-gray-800 text-2xl"
+                  className="text-gray-500 hover:text-gray-800 text-2xl transition"
                 >
                   &times;
                 </button>
@@ -303,7 +305,7 @@ export default function Home() {
                   return (
                     <div
                       key={i}
-                      className="border rounded-lg p-4 shadow-sm hover:shadow-md transition cursor-pointer"
+                      className="border border-gray-100 rounded-lg p-4 shadow-sm hover:shadow-md transition cursor-pointer"
                       onClick={() => {
                         closeListModal();
                         openDetailModal(devotion);
