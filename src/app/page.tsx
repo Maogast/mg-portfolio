@@ -1,64 +1,343 @@
-import Image from "next/image";
+"use client";
+
+import { useState } from 'react';
+import Head from 'next/head';
+import Image from 'next/image';
+import data from '@/data/portfolio.json';
+
+// ----- Types -----
+type ShareOption = { label: string; url: string };
+type EventItem = { name: string; date: string; description: string };
+type BaseItem = { title: string };
+type ItemWithShare = BaseItem & { shareOptions: ShareOption[] };
+type ItemWithEvents = BaseItem & { events: EventItem[] };
+type ItemWithImages = BaseItem & { description?: string; images: string[] };
+type ItemWithLink = BaseItem & { description?: string; link: string };
+type ItemSimple = string;
+type PortfolioItem = ItemSimple | ItemWithShare | ItemWithEvents | ItemWithImages | ItemWithLink;
+
+// Type for devotion items
+type DevotionItem = {
+  date: string;
+  bibleReading: string;
+  materialRead?: string;
+  reflection: string;
+  application: string;
+  prayerFocus: string;
+  song: string;
+};
+
+type Section = {
+  title: string;
+  type: 'list' | 'cards' | 'devotion-list';
+  items: PortfolioItem[] | DevotionItem[];
+};
+
+// Type guards
+function isListSection(section: unknown): section is Section & { type: 'list' } {
+  return (
+    typeof section === 'object' &&
+    section !== null &&
+    'type' in section &&
+    (section as { type: string }).type === 'list'
+  );
+}
+
+function isCardsSection(section: unknown): section is Section & { type: 'cards' } {
+  return (
+    typeof section === 'object' &&
+    section !== null &&
+    'type' in section &&
+    (section as { type: string }).type === 'cards'
+  );
+}
+
+function isDevotionListSection(section: Section): section is Section & { type: 'devotion-list'; items: DevotionItem[] } {
+  return section.type === 'devotion-list';
+}
+
+function isStringItem(item: PortfolioItem): item is string {
+  return typeof item === 'string';
+}
+
+function hasShareOptions(item: PortfolioItem): item is ItemWithShare {
+  return typeof item === 'object' && 'shareOptions' in item;
+}
+
+function hasEvents(item: PortfolioItem): item is ItemWithEvents {
+  return typeof item === 'object' && 'events' in item;
+}
+
+function hasImages(item: PortfolioItem): item is ItemWithImages {
+  return typeof item === 'object' && 'images' in item;
+}
+
+function hasLink(item: PortfolioItem): item is ItemWithLink {
+  return typeof item === 'object' && 'link' in item;
+}
+
+function hasDescription(item: PortfolioItem): item is Exclude<PortfolioItem, string> & { description?: string } {
+  return typeof item === 'object' && 'description' in item;
+}
+
+function getTitle(item: PortfolioItem): string {
+  return isStringItem(item) ? item : item.title;
+}
 
 export default function Home() {
+  const [selectedDevotion, setSelectedDevotion] = useState<DevotionItem | null>(null);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [isListModalOpen, setIsListModalOpen] = useState(false);
+
+  const openDetailModal = (devotion: DevotionItem) => {
+    setSelectedDevotion(devotion);
+    setIsDetailModalOpen(true);
+  };
+
+  const closeDetailModal = () => {
+    setIsDetailModalOpen(false);
+    setSelectedDevotion(null);
+  };
+
+  const openListModal = () => setIsListModalOpen(true);
+  const closeListModal = () => setIsListModalOpen(false);
+
+  // Find the devotion section (there should be only one)
+  const devotionSection = (data.sections as Section[]).find(s => s.type === 'devotion-list') as Section & { type: 'devotion-list'; items: DevotionItem[] } | undefined;
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <div className="min-h-screen bg-white text-gray-800">
+      <Head>
+        <title>{data.name} – Master Guide Portfolio</title>
+        <meta name="description" content="Master Guide portfolio" />
+      </Head>
+
+      <main className="container mx-auto px-4 py-12 max-w-3xl">
+        {/* Hero */}
+        <section className="text-center mb-16">
+          <h1 className="text-4xl font-bold mb-2">{data.name}</h1>
+          <p className="text-xl text-gray-600 mb-4">{data.tagline}</p>
+          <p className="text-gray-700 leading-relaxed">{data.about}</p>
+          <blockquote className="italic mt-6 border-l-4 border-blue-500 pl-4 text-gray-600">
+            {data.mission}
+          </blockquote>
+        </section>
+
+        {/* Dedication */}
+        {data.dedication && (
+          <section className="mb-16 text-center">
+            <h2 className="text-2xl font-semibold mb-2">Dedication</h2>
+            <p className="text-gray-600">{data.dedication}</p>
+          </section>
+        )}
+
+        {/* Sections */}
+        {(data.sections as Section[]).map((section, idx) => (
+          <section key={idx} className="mb-16">
+            <h2 className="text-2xl font-bold border-b border-gray-300 pb-2 mb-6">
+              {section.title}
+            </h2>
+
+            {isListSection(section) && (
+              <ul className="grid grid-cols-1 md:grid-cols-2 gap-2 list-disc list-inside">
+                {(section.items as string[]).map((item, i) => (
+                  <li key={i} className="text-gray-700">{item}</li>
+                ))}
+              </ul>
+            )}
+
+            {isCardsSection(section) && (
+              <div className="space-y-6">
+                {(section.items as PortfolioItem[]).map((item, i) => (
+                  <div key={i} className="border rounded-lg p-4 shadow-sm hover:shadow-md transition">
+                    <h3 className="text-xl font-semibold mb-1">{getTitle(item)}</h3>
+
+                    {hasDescription(item) && item.description && (
+                      <p className="text-gray-600 mb-2">{item.description}</p>
+                    )}
+
+                    {hasLink(item) && (
+                      <a href={item.link} className="text-blue-600 hover:underline">
+                        Learn more →
+                      </a>
+                    )}
+
+                    {hasShareOptions(item) && (
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        {item.shareOptions.map((opt, j) => (
+                          <a
+                            key={j}
+                            href={opt.url}
+                            className="text-sm bg-gray-100 px-3 py-1 rounded-full hover:bg-gray-200"
+                          >
+                            {opt.label}
+                          </a>
+                        ))}
+                      </div>
+                    )}
+
+                    {hasEvents(item) && (
+                      <div className="mt-4 space-y-3">
+                        {item.events.map((event, k) => (
+                          <div key={k} className="bg-gray-50 p-3 rounded">
+                            <p className="font-medium">{event.name}</p>
+                            <p className="text-sm text-gray-500">{event.date}</p>
+                            <p className="text-gray-600">{event.description}</p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {hasImages(item) && (
+                      <div className="mt-3 flex gap-2 overflow-x-auto">
+                        {item.images.map((src, k) => (
+                          <div key={k} className="relative h-32 w-32 shrink-0">
+                            <Image
+                              src={src}
+                              alt={`${getTitle(item)} image ${k + 1}`}
+                              fill
+                              sizes="128px"
+                              className="object-cover rounded"
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {isDevotionListSection(section) && (
+              <div className="text-center">
+                <button
+                  onClick={openListModal}
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition"
+                >
+                  View All 30‑Day Devotions →
+                </button>
+              </div>
+            )}
+          </section>
+        ))}
+
+        {/* Modal for single devotion detail */}
+        {isDetailModalOpen && selectedDevotion && (
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+            onClick={closeDetailModal}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            <div
+              className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex justify-between items-start mb-4">
+                <h2 className="text-2xl font-bold">
+                  {new Date(selectedDevotion.date).toLocaleDateString('en-GB', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric',
+                  })}
+                </h2>
+                <button
+                  onClick={closeDetailModal}
+                  className="text-gray-500 hover:text-gray-800 text-2xl"
+                >
+                  &times;
+                </button>
+              </div>
+              <div className="space-y-4">
+                <div>
+                  <h3 className="font-semibold text-lg">📖 Bible Reading</h3>
+                  <p className="text-gray-700">{selectedDevotion.bibleReading}</p>
+                </div>
+                {selectedDevotion.materialRead && (
+                  <div>
+                    <h3 className="font-semibold text-lg">📚 Material Read</h3>
+                    <p className="text-gray-700">{selectedDevotion.materialRead}</p>
+                  </div>
+                )}
+                <div>
+                  <h3 className="font-semibold text-lg">💭 Reflection</h3>
+                  <p className="text-gray-700 whitespace-pre-wrap">{selectedDevotion.reflection}</p>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-lg">✅ Application</h3>
+                  <p className="text-gray-700 whitespace-pre-wrap">{selectedDevotion.application}</p>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-lg">🙏 Prayer Focus</h3>
+                  <p className="text-gray-700 whitespace-pre-wrap">{selectedDevotion.prayerFocus}</p>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-lg">🎵 Song</h3>
+                  <p className="text-gray-700">{selectedDevotion.song}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Modal for the list of all devotions */}
+        {isListModalOpen && devotionSection && (
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+            onClick={closeListModal}
           >
-            Documentation
-          </a>
-        </div>
+            <div
+              className="bg-white rounded-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto p-6"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex justify-between items-start mb-4">
+                <h2 className="text-2xl font-bold">30‑Day Devotion Challenge</h2>
+                <button
+                  onClick={closeListModal}
+                  className="text-gray-500 hover:text-gray-800 text-2xl"
+                >
+                  &times;
+                </button>
+              </div>
+              <div className="space-y-4">
+                {devotionSection.items.map((item, i) => {
+                  const devotion = item as DevotionItem;
+                  return (
+                    <div
+                      key={i}
+                      className="border rounded-lg p-4 shadow-sm hover:shadow-md transition cursor-pointer"
+                      onClick={() => {
+                        closeListModal();
+                        openDetailModal(devotion);
+                      }}
+                    >
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h3 className="text-lg font-semibold">
+                            {new Date(devotion.date).toLocaleDateString('en-GB', {
+                              day: 'numeric',
+                              month: 'long',
+                              year: 'numeric',
+                            })}
+                          </h3>
+                          <p className="text-gray-600 text-sm mt-1">
+                            📖 {devotion.bibleReading}
+                          </p>
+                          <p className="text-gray-700 mt-2 line-clamp-2">
+                            {devotion.reflection}
+                          </p>
+                        </div>
+                        <span className="text-blue-500 text-sm">Read more →</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        )}
+
+        <footer className="text-center text-gray-500 text-sm mt-20 pt-8 border-t">
+          © {new Date().getFullYear()} {data.name} – Master Guide Portfolio
+        </footer>
       </main>
     </div>
   );
