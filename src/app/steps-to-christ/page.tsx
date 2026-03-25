@@ -357,7 +357,7 @@ export default function StepsToChristPage() {
           {/* Social Links */}
           <div className="flex justify-center gap-6 mt-10">
             <a
-              href="https://github.com/your-username"
+              href="https://github.com/maogast"
               target="_blank"
               rel="noopener noreferrer"
               className="text-3xl hover:scale-110 transition transform"

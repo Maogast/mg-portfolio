@@ -19,14 +19,14 @@
       ]
     },
     {
-         "title": "Education",
-         "type": "cards",
-         "items": [
-    {
-      "title": "Academic & Professional Journey",
-      "description": "Bachelor in Information Technology (Technical University of Kenya, 2018–2024) with honors. Software developer and prompt engineer specializing in Next.js, React, and Java. Continuous certifications and self‑directed learning in modern web technologies. Full details, including secondary and primary education, certifications, and projects, are available on my main portfolio.",
-      "link": "https://magaredev.vercel.app/"
-    }
+      "title": "Education",
+      "type": "cards",
+      "items": [
+        {
+          "title": "Academic & Professional Journey",
+          "description": "Bachelor in Information Technology (Technical University of Kenya, 2018–2024) with honors. Software developer and prompt engineer specializing in Next.js, React, and Java. Continuous certifications and self‑directed learning in modern web technologies. Full details, including secondary and primary education, certifications, and projects, are available on my main portfolio.",
+          "link": "https://magaredev.vercel.app/"
+        }
       ]
     },
     {
@@ -35,15 +35,18 @@
       "items": [
         {
           "title": "30‑Day Devotion Challenge",
-      "description": "A collection of daily devotions written during the 30‑day challenge, covering themes from Reflecting Christ one of devotional books and personal reflections.",
-      "link": "#devotion-challenge"
+          "description": "A collection of daily devotions written during the 30‑day challenge, covering themes from Reflecting Christ one of devotional books and personal reflections.",
+          "link": "#devotion-challenge"
         },
         {
-           "title": "Steps to Christ – Chapter Summaries",
-           "description": "Complete summaries of each chapter from Steps to Christ by Ellen G. White. Prepared for Master Guide.",
-           "link": "/steps-to-christ",
-           "shareOptions": [
-        { "label": "Open in Google Forms", "url": "https://docs.google.com/forms/d/e/1FAIpQLSczdeOAquVJPnBALXn0K0LSDfl3fNKRtL-b0TXI50XpucBESg/viewform" }
+          "title": "Steps to Christ – Chapter Summaries",
+          "description": "Complete summaries of each chapter from Steps to Christ by Ellen G. White. Prepared for Master Guide.",
+          "link": "/steps-to-christ",
+          "shareOptions": [
+            {
+              "label": "Open in Google Forms",
+              "url": "https://docs.google.com/forms/d/e/1FAIpQLSczdeOAquVJPnBALXn0K0LSDfl3fNKRtL-b0TXI50XpucBESg/viewform"
+            }
           ]
         }
       ]
@@ -52,6 +55,11 @@
       "title": "Awards / Honors Taught",
       "type": "cards",
       "items": [
+        {
+          "title": "Nutrition Honor",
+          "description": "Complete study guide for the Nutrition Honor, including food pyramid, vegetarian diets, vitamins, and more.",
+          "link": "/nutrition-honor"
+        },
         {
           "title": "Ambassadors Club Teaching",
           "description": "Educating and mentoring young ambassadors in Christian leadership, public speaking, and community service (2026–Present)"
@@ -66,14 +74,21 @@
       "title": "Lifestyle Development (Stature)",
       "type": "cards",
       "items": [
-        { "title": "Physical Fitness", 
+        {
+          "title": "Physical Fitness",
           "description": "Regular swimming for fitness and mental clarity",
           "shareOptions": [
             { "label": "Watch Steve Swimming", "url": "/videos/swimming-1.mp4" }
           ]
         },
-        { "title": "Guitar Performance & Composition", "description": "Creating and performing music across various genres" },
-        { "title": "Singing", "description": "Vocal expression in solo and group settings, Chorister Lead at Zimmerman SDA Church" }
+        {
+          "title": "Guitar Performance & Composition",
+          "description": "Creating and performing music across various genres"
+        },
+        {
+          "title": "Singing",
+          "description": "Vocal expression in solo and group settings, Chorister Lead at Zimmerman SDA Church"
+        }
       ]
     },
     {
@@ -83,26 +98,23 @@
         {
           "title": "Steps to Christ",
           "description": "Daily devotion and chapter summaries",
-           "images": [
-           "/images/steps-to-christ/steps-1.jpg",
-           "/images/steps-to-christ/steps-3.jpg",
-           "/images/steps-to-christ/steps-5.jpg",
-           "/images/steps-to-christ/steps-2.jpg",
-           "/images/steps-to-christ/steps-4.jpg",
-           "/images/steps-to-christ/steps-6.jpg"
-  
+          "images": [
+            "/images/steps-to-christ/steps-1.jpg",
+            "/images/steps-to-christ/steps-3.jpg",
+            "/images/steps-to-christ/steps-5.jpg",
+            "/images/steps-to-christ/steps-2.jpg",
+            "/images/steps-to-christ/steps-4.jpg",
+            "/images/steps-to-christ/steps-6.jpg"
           ],
-         "shareOptions": [
-         { "label": "Chapter Summaries", "url":"/steps-to-christ" },
-         { "label": "Personal Reflections", "url": "#devotion-challenge" }
-        ]
+          "shareOptions": [
+            { "label": "Chapter Summaries", "url": "/steps-to-christ" },
+            { "label": "Personal Reflections", "url": "#devotion-challenge" }
+          ]
         },
         {
           "title": "The Desire of Ages",
           "description": "Meditations on the life of Christ",
-          "shareOptions": [
-            { "label": "Reflections", "url": "#" }
-          ]
+          "shareOptions": [{ "label": "Reflections", "url": "#" }]
         },
         {
           "title": "Fundamental Beliefs",
@@ -115,9 +127,7 @@
         {
           "title": "Adventist Heritage",
           "description": "Engaged with 'Tell the World' series and created inspirational content",
-          "shareOptions": [
-            { "label": "Reflections", "url": "#" }
-          ]
+          "shareOptions": [{ "label": "Reflections", "url": "#" }]
         }
       ]
     },
@@ -163,11 +173,16 @@
             "/images/serepta-2.jpg",
             "/images/serepta-3.jpg",
             "/images/serepta-4.jpg"
-            
           ],
           "shareOptions": [
-            { "label": "Watch Steve singing with children", "url": "/videos/serepta-clip.mp4" },
-            { "label": "Watch Steve drawing", "url": "/videos/serepta-clip2.mp4" },
+            {
+              "label": "Watch Steve singing with children",
+              "url": "/videos/serepta-clip.mp4"
+            },
+            {
+              "label": "Watch Steve drawing",
+              "url": "/videos/serepta-clip2.mp4"
+            },
             { "label": "Watch Video", "url": "/videos/serepta-clip1.mp4" }
           ]
         }
