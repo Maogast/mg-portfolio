@@ -40,8 +40,8 @@
         },
         {
            "title": "Steps to Christ – Chapter Summaries",
-           "description": "Complete summaries of each chapter from Steps to Christ by Ellen G. White. Prepared for Master Guide evidence.",
-           "link": "https://docs.google.com/forms/d/e/1FAIpQLSczdeOAquVJPnBALXn0K0LSDfl3fNKRtL-b0TXI50XpucBESg/viewform",
+           "description": "Complete summaries of each chapter from Steps to Christ by Ellen G. White. Prepared for Master Guide.",
+           "link": "/steps-to-christ",
            "shareOptions": [
         { "label": "Open in Google Forms", "url": "https://docs.google.com/forms/d/e/1FAIpQLSczdeOAquVJPnBALXn0K0LSDfl3fNKRtL-b0TXI50XpucBESg/viewform" }
           ]
@@ -93,7 +93,7 @@
   
           ],
          "shareOptions": [
-         { "label": "Chapter Summaries", "link": "#" },
+         { "label": "Chapter Summaries", "url":"/steps-to-christ" },
          { "label": "Personal Reflections", "url": "#devotion-challenge" }
         ]
         },
