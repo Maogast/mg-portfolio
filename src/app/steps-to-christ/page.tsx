@@ -182,7 +182,7 @@ export default function StepsToChristPage() {
             Steps to Christ
           </h1>
           <p className="text-gray-600 dark:text-gray-400 text-lg max-w-2xl mx-auto">
-            Chapter summaries prepared for Master Guide evidence. May these truths deepen your walk with God.
+            Chapter summaries prepared as a spiritual resource for Master Guide growth. May these truths deepen your walk with God.
           </p>
         </div>
 
