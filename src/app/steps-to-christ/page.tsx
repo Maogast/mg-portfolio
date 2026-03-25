@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect, useRef } from 'react';
-import Head from 'next/head';
-import data from '@/data/stepsToChrist.json';
+import { useState, useEffect, useRef } from "react";
+import Head from "next/head";
+import data from "@/data/stepsToChrist.json";
 
 type Chapter = {
   chapter: number;
@@ -13,13 +13,23 @@ type Chapter = {
 };
 
 // ShareButtons component – defined outside the main component to avoid re‑creation on each render
-const ShareButtons = ({ chapter, copied, onCopy }: { chapter: Chapter; copied: boolean; onCopy: () => void }) => {
-  const pageUrl = typeof window !== 'undefined' ? window.location.href : '';
+const ShareButtons = ({
+  chapter,
+  copied,
+  onCopy,
+}: {
+  chapter: Chapter;
+  copied: boolean;
+  onCopy: () => void;
+}) => {
+  const pageUrl = typeof window !== "undefined" ? window.location.href : "";
   const shareText = `📖 Steps to Christ – Chapter ${chapter.chapter}: ${chapter.title}\n\n“${chapter.quote.slice(0, 120)}...”\n\nRead the full summary at: ${pageUrl}`;
 
   return (
     <div className="flex flex-wrap gap-2 mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
-      <span className="text-sm text-gray-500 dark:text-gray-400 mr-2 self-center">Share this chapter:</span>
+      <span className="text-sm text-gray-500 dark:text-gray-400 mr-2 self-center">
+        Share this chapter:
+      </span>
       <a
         href={`https://wa.me/?text=${encodeURIComponent(shareText)}`}
         target="_blank"
@@ -54,7 +64,7 @@ const ShareButtons = ({ chapter, copied, onCopy }: { chapter: Chapter; copied: b
         onClick={onCopy}
         className="inline-flex items-center gap-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-3 py-1 rounded-full text-sm hover:bg-gray-200 dark:hover:bg-gray-600 transition"
       >
-        🔗 {copied ? 'Copied!' : 'Copy Link'}
+        🔗 {copied ? "Copied!" : "Copy Link"}
       </button>
     </div>
   );
@@ -71,10 +81,10 @@ export default function StepsToChristPage() {
 
   // Dark mode – lazy initializer
   const [darkMode, setDarkMode] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem('darkMode');
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("darkMode");
       if (stored !== null) return JSON.parse(stored);
-      return window.matchMedia('(prefers-color-scheme: dark)').matches;
+      return window.matchMedia("(prefers-color-scheme: dark)").matches;
     }
     return false;
   });
@@ -90,22 +100,22 @@ export default function StepsToChristPage() {
   // Apply dark mode class and store preference
   useEffect(() => {
     if (darkMode) {
-      document.documentElement.classList.add('dark');
+      document.documentElement.classList.add("dark");
     } else {
-      document.documentElement.classList.remove('dark');
+      document.documentElement.classList.remove("dark");
     }
-    localStorage.setItem('darkMode', JSON.stringify(darkMode));
+    localStorage.setItem("darkMode", JSON.stringify(darkMode));
   }, [darkMode]);
 
   // Manage body scroll when modal is open
   useEffect(() => {
     if (isModalOpen) {
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = 'auto';
+      document.body.style.overflow = "auto";
     }
     return () => {
-      document.body.style.overflow = 'auto';
+      document.body.style.overflow = "auto";
     };
   }, [isModalOpen]);
 
@@ -115,13 +125,13 @@ export default function StepsToChristPage() {
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            const index = Number(entry.target.getAttribute('data-index'));
+            const index = Number(entry.target.getAttribute("data-index"));
             setVisibleCards((prev) => [...new Set([...prev, index])]);
             observer.unobserve(entry.target);
           }
         });
       },
-      { threshold: 0.1 }
+      { threshold: 0.1 },
     );
 
     cardRefs.current.forEach((card) => {
@@ -144,15 +154,15 @@ export default function StepsToChristPage() {
   // Close modal on Escape key
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') closeModal();
+      if (e.key === "Escape") closeModal();
     };
-    window.addEventListener('keydown', handleEsc);
-    return () => window.removeEventListener('keydown', handleEsc);
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
   }, []);
 
   // Copy link handler
   const handleCopyLink = () => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       navigator.clipboard.writeText(window.location.href);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
@@ -163,7 +173,10 @@ export default function StepsToChristPage() {
     <div className="min-h-screen bg-white text-gray-800 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300">
       <Head>
         <title>Steps to Christ – Chapter Summaries | Stephen Ogaro</title>
-        <meta name="description" content="Complete summaries of each chapter from Steps to Christ by Ellen G. White, with reflections and quotes." />
+        <meta
+          name="description"
+          content="Complete summaries of each chapter from Steps to Christ by Ellen G. White, with reflections and quotes."
+        />
       </Head>
 
       {/* Dark Mode Toggle */}
@@ -172,7 +185,7 @@ export default function StepsToChristPage() {
         className="fixed top-4 right-4 z-50 p-2 rounded-full bg-gray-200 dark:bg-gray-700 shadow-md hover:shadow-lg transition-all focus:outline-none focus:ring-2 focus:ring-blue-500"
         aria-label="Toggle dark mode"
       >
-        {mounted ? (darkMode ? '☀️' : '🌙') : '🌓'}
+        {mounted ? (darkMode ? "☀️" : "🌙") : "🌓"}
       </button>
 
       <main className="container mx-auto px-4 py-12 max-w-5xl">
@@ -182,7 +195,8 @@ export default function StepsToChristPage() {
             Steps to Christ
           </h1>
           <p className="text-gray-600 dark:text-gray-400 text-lg max-w-2xl mx-auto">
-            Chapter summaries prepared as a spiritual resource for Master Guide growth. May these truths deepen your walk with God.
+            Chapter summaries prepared as a spiritual resource for Master Guide
+            growth. May these truths deepen your walk with God.
           </p>
         </div>
 
@@ -191,11 +205,13 @@ export default function StepsToChristPage() {
           {chapters.map((chapter, index) => (
             <div
               key={chapter.chapter}
-              ref={(el) => { cardRefs.current[index] = el; }}
+              ref={(el) => {
+                cardRefs.current[index] = el;
+              }}
               data-index={index}
               className={`
                 transform transition-all duration-500
-                ${visibleCards.includes(index) ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}
+                ${visibleCards.includes(index) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}
               `}
             >
               <div className="group relative h-full border border-gray-200 dark:border-gray-700 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 bg-white dark:bg-gray-800 hover:-translate-y-1">
@@ -215,7 +231,7 @@ export default function StepsToChristPage() {
                     “{chapter.quote}”
                   </div>
                   <p className="text-gray-700 dark:text-gray-300 line-clamp-4 mb-4">
-                    {chapter.summary.replace(/\n/g, ' ').slice(0, 200)}…
+                    {chapter.summary.replace(/\n/g, " ").slice(0, 200)}…
                   </p>
                   <button
                     onClick={() => openModal(chapter)}
@@ -256,8 +272,11 @@ export default function StepsToChristPage() {
                   “{selectedChapter.quote}”
                 </div>
                 <div className="prose prose-gray dark:prose-invert max-w-none">
-                  {selectedChapter.summary.split('\n').map((paragraph, idx) => (
-                    <p key={idx} className="mb-4 text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
+                  {selectedChapter.summary.split("\n").map((paragraph, idx) => (
+                    <p
+                      key={idx}
+                      className="mb-4 text-gray-700 dark:text-gray-300 whitespace-pre-wrap"
+                    >
                       {paragraph}
                     </p>
                   ))}
@@ -279,9 +298,105 @@ export default function StepsToChristPage() {
             </div>
           </div>
         )}
+        {/* Contact Section */}
+        <section id="contact" className="mb-16 animate-fade-in scroll-mt-24">
+          {/* Banner */}
+          <div className="bg-blue-100 dark:bg-blue-900/30 p-4 rounded-xl text-center mb-8">
+            <p className="text-lg font-medium">I’d love to hear from you! 👋</p>
+            <p className="text-sm text-gray-600 dark:text-gray-300">
+              Whether it&apos;s a project, collaboration, or just a hello.
+            </p>
+          </div>
 
+          <h2 className="text-3xl font-bold border-b-2 border-blue-200 dark:border-blue-700 pb-2 mb-6 inline-block">
+            📬 Contact & Booking
+          </h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* WhatsApp */}
+            <a
+              href="https://wa.me/254705001193?text=Hello%20Stephen%2C%20I%20saw%20your%20portfolio%20and%20would%20like%20to%20connect."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-4 p-6 bg-green-50 dark:bg-green-900/20 rounded-xl shadow-sm hover:shadow-md transition group"
+            >
+              <span className="text-4xl group-hover:scale-110 transition">
+                📱
+              </span>
+              <div>
+                <h3 className="text-xl font-semibold">WhatsApp</h3>
+                <p className="text-gray-600 dark:text-gray-400">
+                  Send me a message – I&apos;ll reply as soon as possible.
+                </p>
+                <span className="text-sm text-green-600 dark:text-green-400">
+                  +254 705 001 193
+                </span>
+              </div>
+            </a>
+
+            {/* Email */}
+            <a
+              href="mailto:stevemagare4@gmail.com?subject=Inquiry%20from%20your%20portfolio&body=Hello%20Stephen%2C%0A%0AI%20saw%20your%20portfolio%20and%20would%20like%20to%20..."
+              className="flex items-center gap-4 p-6 bg-blue-50 dark:bg-blue-900/20 rounded-xl shadow-sm hover:shadow-md transition group"
+            >
+              <span className="text-4xl group-hover:scale-110 transition">
+                📧
+              </span>
+              <div>
+                <h3 className="text-xl font-semibold">Email</h3>
+                <p className="text-gray-600 dark:text-gray-400">
+                  Write to me for any inquiries or collaborations.
+                </p>
+                <span className="text-sm text-blue-600 dark:text-blue-400">
+                  stevemagare4@gmail.com
+                </span>
+              </div>
+            </a>
+          </div>
+
+          {/* Social Links */}
+          <div className="flex justify-center gap-6 mt-10">
+            <a
+              href="https://github.com/your-username"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-3xl hover:scale-110 transition transform"
+              title="GitHub"
+            >
+              🐙
+            </a>
+            <a
+              href="https://linkedin.com/in/your-username"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-3xl hover:scale-110 transition transform"
+              title="LinkedIn"
+            >
+              🔗
+            </a>
+            <a
+              href="https://twitter.com/your-username"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-3xl hover:scale-110 transition transform"
+              title="Twitter"
+            >
+              🐦
+            </a>
+            <a
+              href="https://magaredev.vercel.app"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-3xl hover:scale-110 transition transform"
+              title="Portfolio"
+            >
+              🌐
+            </a>
+          </div>
+        </section>
         <footer className="text-center text-gray-500 dark:text-gray-400 text-sm mt-20 pt-8 border-t dark:border-gray-800">
-          © {new Date().getFullYear()} Stephen Magare Ogaro – Master Guide Portfolio
+          © {new Date().getFullYear()} Stephen Magare Ogaro – Master Guide
+          Portfolio
         </footer>
       </main>
     </div>
