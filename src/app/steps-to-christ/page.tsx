@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Head from "next/head";
 import data from "@/data/stepsToChrist.json";
+import Link from "next/link";
 
 type Chapter = {
   chapter: number;
@@ -191,6 +192,12 @@ export default function StepsToChristPage() {
       <main className="container mx-auto px-4 py-12 max-w-5xl">
         {/* Hero Section */}
         <div className="text-center mb-16 animate-fade-in">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-1 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition mb-4"
+          >
+            ← Back to Home
+          </Link>
           <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
             Steps to Christ
           </h1>
