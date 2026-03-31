@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import data from "@/data/prayer.json";
@@ -13,24 +13,54 @@ type PrayerChapter = {
   prayerFocus: string;
 };
 
-// ShareButtons component
-const ShareButtons = ({
-  title,
+// Component for copying a chapter-specific link (per chapter)
+const CopyChapterLink = ({
+  chapter,
   copied,
   onCopy,
-  pageUrl,
 }: {
-  title: string;
+  chapter: number;
   copied: boolean;
-  onCopy: () => void;
-  pageUrl: string;
+  onCopy: (chapter: number) => void;
 }) => {
-  const shareText = `📖 Prayer – ${title}\n\nCheck out this encouraging meditation on prayer from the writings of Ellen G. White. ${pageUrl}`;
+  const getChapterUrl = () => {
+    if (typeof window === "undefined") return "";
+    const url = new URL(window.location.href);
+    url.searchParams.set("chapter", chapter.toString());
+    return url.toString();
+  };
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(getChapterUrl());
+    onCopy(chapter);
+    setTimeout(() => onCopy(-1), 2000);
+  };
 
   return (
-    <div className="flex flex-wrap gap-2 mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+    <button
+      onClick={handleCopy}
+      className="inline-flex items-center gap-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-3 py-1 rounded-full text-sm hover:bg-gray-200 dark:hover:bg-gray-600 transition"
+    >
+      🔗 {copied ? "Copied!" : "Share Chapter"}
+    </button>
+  );
+};
+
+// Global share buttons (WhatsApp & Twitter) – shares the current page URL
+const GlobalShareButtons = () => {
+  const [pageUrl, setPageUrl] = useState("");
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setPageUrl(window.location.href);
+  }, []);
+
+  const shareText = `📖 Prayer – Meditations from Ellen G. White\n\nCheck out this encouraging collection on prayer. ${pageUrl}`;
+
+  return (
+    <div className="flex flex-wrap gap-2 mt-8 pt-4 border-t border-gray-200 dark:border-gray-700 justify-center">
       <span className="text-sm text-gray-500 dark:text-gray-400 mr-2 self-center">
-        Share this chapter:
+        Share this page:
       </span>
       <a
         href={`https://wa.me/?text=${encodeURIComponent(shareText)}`}
@@ -48,12 +78,6 @@ const ShareButtons = ({
       >
         🐦 Twitter / X
       </a>
-      <button
-        onClick={onCopy}
-        className="inline-flex items-center gap-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-3 py-1 rounded-full text-sm hover:bg-gray-200 dark:hover:bg-gray-600 transition"
-      >
-        🔗 {copied ? "Copied!" : "Copy Link"}
-      </button>
     </div>
   );
 };
@@ -68,13 +92,18 @@ export default function PrayerPage() {
     }
     return false;
   });
-  const [copied, setCopied] = useState(false);
-  const [pageUrl, setPageUrl] = useState("");
+  const [copiedChapter, setCopiedChapter] = useState<number>(-1);
+  const chapterRefs = useRef<Record<number, HTMLDivElement | null>>({});
+
+  // Memoize chapters to avoid recreation on every render
+  const chapters: PrayerChapter[] = useMemo(
+    () => (Array.isArray(data) ? data : [data]),
+    []
+  );
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
-    setPageUrl(window.location.href);
   }, []);
 
   useEffect(() => {
@@ -86,15 +115,25 @@ export default function PrayerPage() {
     localStorage.setItem("darkMode", JSON.stringify(darkMode));
   }, [darkMode]);
 
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(window.location.href);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  // Handle both single object and array
-  const chapterData = Array.isArray(data) ? data[0] : data;
-  const chapter = chapterData as PrayerChapter | null;
+  // Scroll to chapter based on URL query parameter
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    const chapterParam = params.get("chapter");
+    if (chapterParam) {
+      const chapterNum = parseInt(chapterParam, 10);
+      const targetRef = chapterRefs.current[chapterNum];
+      if (targetRef) {
+        targetRef.scrollIntoView({ behavior: "smooth", block: "start" });
+        // Add a temporary highlight effect
+        targetRef.style.transition = "background-color 0.3s";
+        targetRef.style.backgroundColor = "#fef9c3";
+        setTimeout(() => {
+          targetRef.style.backgroundColor = "";
+        }, 1500);
+      }
+    }
+  }, [chapters]);
 
   // Simple markdown-like renderer for the summary
   const renderSummary = (text: string) => {
@@ -176,8 +215,15 @@ export default function PrayerPage() {
           </p>
         </div>
 
-        {chapter && (
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg transition-all border-l-4 border-blue-500 overflow-hidden">
+        {/* Render all chapters with refs and per‑chapter share button */}
+        {chapters.map((chapter, idx) => (
+          <div
+            key={chapter.chapter || idx}
+            ref={(el) => {
+              chapterRefs.current[chapter.chapter] = el;
+            }}
+            className="bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg transition-all border-l-4 border-blue-500 overflow-hidden mb-8 scroll-mt-20"
+          >
             <div className="p-6">
               <h2 className="text-2xl font-bold mb-2 text-gray-800 dark:text-white">
                 Chapter {chapter.chapter}: {chapter.title}
@@ -196,21 +242,23 @@ export default function PrayerPage() {
                   {chapter.prayerFocus}
                 </p>
               </div>
+              {/* Chapter-specific share button */}
+              <div className="mt-4">
+                <CopyChapterLink
+                  chapter={chapter.chapter}
+                  copied={copiedChapter === chapter.chapter}
+                  onCopy={(ch) => setCopiedChapter(ch)}
+                />
+              </div>
             </div>
           </div>
-        )}
+        ))}
 
-        {/* Share buttons */}
-        <ShareButtons
-          title={chapter?.title || "Prayer"}
-          copied={copied}
-          onCopy={handleCopyLink}
-          pageUrl={pageUrl}
-        />
+        {/* Global social share buttons */}
+        <GlobalShareButtons />
 
-        <footer className="text-center text-gray-500 dark:text-gray-400 text-sm mt-20 pt-8 border-t dark:border-gray-800">
-          © {new Date().getFullYear()} Stephen Magare Ogaro – Master Guide
-          Portfolio
+        <footer className="text-center text-gray-500 dark:text-gray-400 text-sm mt-12 pt-8 border-t dark:border-gray-800">
+          © {new Date().getFullYear()} Stephen Magare Ogaro – Master Guide Portfolio
         </footer>
       </main>
     </div>
