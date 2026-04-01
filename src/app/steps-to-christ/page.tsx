@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, Suspense, useCallback } from "react";
 import Head from "next/head";
+import { useSearchParams, useRouter } from "next/navigation";
 import data from "@/data/stepsToChrist.json";
 import Link from "next/link";
 
@@ -13,7 +14,13 @@ type Chapter = {
   date?: string;
 };
 
-// ShareButtons component – defined outside the main component to avoid re‑creation on each render
+// Helper to generate a shareable URL with chapter parameter
+function getChapterUrl(chapterNumber: number): string {
+  const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
+  return `${baseUrl}/steps-to-christ?chapter=${chapterNumber}`;
+}
+
+// ShareButtons component – uses chapter‑specific URL
 const ShareButtons = ({
   chapter,
   copied,
@@ -23,7 +30,7 @@ const ShareButtons = ({
   copied: boolean;
   onCopy: () => void;
 }) => {
-  const pageUrl = typeof window !== "undefined" ? window.location.href : "";
+  const pageUrl = getChapterUrl(chapter.chapter);
   const shareText = `📖 Steps to Christ – Chapter ${chapter.chapter}: ${chapter.title}\n\n“${chapter.quote.slice(0, 120)}...”\n\nRead the full summary at: ${pageUrl}`;
 
   return (
@@ -71,16 +78,20 @@ const ShareButtons = ({
   );
 };
 
-export default function StepsToChristPage() {
+// The main component – needs Suspense because useSearchParams is used
+function StepsToChristContent() {
+  const chapters: Chapter[] = data;
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
   const [selectedChapter, setSelectedChapter] = useState<Chapter | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [visibleCards, setVisibleCards] = useState<number[]>([]);
   const [copied, setCopied] = useState(false);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const hasOpenedFromUrl = useRef(false); // prevent duplicate openings
 
-  const chapters: Chapter[] = data;
-
-  // Dark mode – lazy initializer
+  // Dark mode
   const [darkMode, setDarkMode] = useState(() => {
     if (typeof window !== "undefined") {
       const stored = localStorage.getItem("darkMode");
@@ -90,7 +101,6 @@ export default function StepsToChristPage() {
     return false;
   });
 
-  // Track if component is mounted (to avoid hydration mismatch)
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -98,7 +108,6 @@ export default function StepsToChristPage() {
     setMounted(true);
   }, []);
 
-  // Apply dark mode class and store preference
   useEffect(() => {
     if (darkMode) {
       document.documentElement.classList.add("dark");
@@ -108,7 +117,6 @@ export default function StepsToChristPage() {
     localStorage.setItem("darkMode", JSON.stringify(darkMode));
   }, [darkMode]);
 
-  // Manage body scroll when modal is open
   useEffect(() => {
     if (isModalOpen) {
       document.body.style.overflow = "hidden";
@@ -120,7 +128,7 @@ export default function StepsToChristPage() {
     };
   }, [isModalOpen]);
 
-  // Intersection Observer for scroll animations
+  // Intersection Observer for card animations
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -132,7 +140,7 @@ export default function StepsToChristPage() {
           }
         });
       },
-      { threshold: 0.1 },
+      { threshold: 0.1 }
     );
 
     cardRefs.current.forEach((card) => {
@@ -142,15 +150,33 @@ export default function StepsToChristPage() {
     return () => observer.disconnect();
   }, []);
 
-  const openModal = (chapter: Chapter) => {
+  // Open modal and update URL
+  const openModal = useCallback((chapter: Chapter) => {
     setSelectedChapter(chapter);
     setIsModalOpen(true);
-  };
+    router.replace(`?chapter=${chapter.chapter}`, { scroll: false });
+  }, [router]);
 
-  const closeModal = () => {
+  // Close modal and remove chapter from URL
+  const closeModal = useCallback(() => {
     setIsModalOpen(false);
     setSelectedChapter(null);
-  };
+    router.replace("/steps-to-christ", { scroll: false });
+  }, [router]);
+
+  // Auto‑open modal if chapter parameter is present
+  useEffect(() => {
+    const chapterParam = searchParams.get("chapter");
+    if (chapterParam && !hasOpenedFromUrl.current) {
+      const chapterNumber = parseInt(chapterParam, 10);
+      const chapter = chapters.find((c) => c.chapter === chapterNumber);
+      if (chapter) {
+        hasOpenedFromUrl.current = true;
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        openModal(chapter);
+      }
+    }
+  }, [searchParams, chapters, openModal]);
 
   // Close modal on Escape key
   useEffect(() => {
@@ -159,16 +185,15 @@ export default function StepsToChristPage() {
     };
     window.addEventListener("keydown", handleEsc);
     return () => window.removeEventListener("keydown", handleEsc);
-  }, []);
+  }, [closeModal]);
 
-  // Copy link handler
-  const handleCopyLink = () => {
-    if (typeof window !== "undefined") {
-      navigator.clipboard.writeText(window.location.href);
+  const handleCopyLink = useCallback(() => {
+    if (typeof window !== "undefined" && selectedChapter) {
+      navigator.clipboard.writeText(getChapterUrl(selectedChapter.chapter));
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     }
-  };
+  }, [selectedChapter]);
 
   return (
     <div className="min-h-screen bg-white text-gray-800 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300">
@@ -222,7 +247,6 @@ export default function StepsToChristPage() {
               `}
             >
               <div className="group relative h-full border border-gray-200 dark:border-gray-700 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 bg-white dark:bg-gray-800 hover:-translate-y-1">
-                {/* Decorative gradient bar */}
                 <div className="absolute top-0 left-0 right-0 h-1 bg-linear-to-r from-blue-500 to-purple-500"></div>
 
                 <div className="p-6 flex flex-col h-full">
@@ -305,9 +329,9 @@ export default function StepsToChristPage() {
             </div>
           </div>
         )}
-        {/* Contact Section */}
+
+        {/* Contact Section – unchanged */}
         <section id="contact" className="mb-16 animate-fade-in scroll-mt-24">
-          {/* Banner */}
           <div className="bg-blue-100 dark:bg-blue-900/30 p-4 rounded-xl text-center mb-8">
             <p className="text-lg font-medium">I’d love to hear from you! 👋</p>
             <p className="text-sm text-gray-600 dark:text-gray-300">
@@ -320,7 +344,6 @@ export default function StepsToChristPage() {
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* WhatsApp */}
             <a
               href="https://wa.me/254705001193?text=Hello%20Stephen%2C%20I%20saw%20your%20portfolio%20and%20would%20like%20to%20connect."
               target="_blank"
@@ -341,7 +364,6 @@ export default function StepsToChristPage() {
               </div>
             </a>
 
-            {/* Email */}
             <a
               href="mailto:stevemagare4@gmail.com?subject=Inquiry%20from%20your%20portfolio&body=Hello%20Stephen%2C%0A%0AI%20saw%20your%20portfolio%20and%20would%20like%20to%20..."
               className="flex items-center gap-4 p-6 bg-blue-50 dark:bg-blue-900/20 rounded-xl shadow-sm hover:shadow-md transition group"
@@ -361,7 +383,6 @@ export default function StepsToChristPage() {
             </a>
           </div>
 
-          {/* Social Links */}
           <div className="flex justify-center gap-6 mt-10">
             <a
               href="https://github.com/maogast"
@@ -401,11 +422,21 @@ export default function StepsToChristPage() {
             </a>
           </div>
         </section>
+
         <footer className="text-center text-gray-500 dark:text-gray-400 text-sm mt-20 pt-8 border-t dark:border-gray-800">
           © {new Date().getFullYear()} Stephen Magare Ogaro – Master Guide
           Portfolio
         </footer>
       </main>
     </div>
+  );
+}
+
+// Wrap the content in Suspense because useSearchParams requires it
+export default function StepsToChristPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <StepsToChristContent />
+    </Suspense>
   );
 }
