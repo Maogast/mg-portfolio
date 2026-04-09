@@ -5,35 +5,35 @@
       "name": "Elder Ralph Osoti",
       "role": "Lead Trainer",
       "subjects": ["Leadership", "Pathfinder History", "Counseling"],
-      "image": "/images/trainers/ralph.jpg",
+      "image": "/images/trainers/placeholder.jpg",
       "bio": "A seasoned elder with decades of youth ministry experience."
     },
     {
       "name": "Mg Emily Bolo",
       "role": "Prayer Ministry Trainer",
       "subjects": ["Intercessory Prayer", "Spiritual Warfare", "Devotional Life"],
-      "image": "/images/trainers/emily.jpg",
+      "image": "/images/trainers/placeholder.jpg",
       "bio": "Passionate about leading others into deeper prayer."
     },
     {
       "name": "Mg Yom Kapur",
-      "role": "Nutrition & Media Trainer",
-      "subjects": ["Nutrition", "Coaching"],
-      "image": "/images/trainers/yom.jpg",
-      "bio": "Bridging technology and faith for effective outreach."
+      "role": "Nutritionist & Wellness Trainer",
+      "subjects": ["Nutrition", "Physical Wellness", "Healthy Lifestyle"],
+      "image": "/images/trainers/yom.jpeg",
+      "bio": "Dedicated to promoting holistic health and well-being."
     }
   ],
   "directors": [
     {
       "name": "Mg Nancy Lusia",
       "role": "Master Guide Director",
-      "image": "/images/trainers/nancy.jpg",
+      "image": "/images/trainers/placeholder.jpg" ,
       "bio": "Oversees the Master Guide program, providing vision and guidance."
     },
     {
       "name": "Elder Abraham",
       "role": "Prayer Cell Coordinator",
-      "image": "/images/trainers/abraham.jpg",
+      "image": "/images/trainers/placeholder.jpg" ,
       "bio": "Coordinates the prayer cell network and supports trainers."
     }
   ]

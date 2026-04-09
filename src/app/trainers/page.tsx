@@ -7,14 +7,19 @@ import Link from "next/link";
 import data from "@/data/trainers.json";
 
 export default function TrainersPage() {
-  const [darkMode, setDarkMode] = useState(() => {
-    if (typeof window !== "undefined") {
-      const stored = localStorage.getItem("darkMode");
-      if (stored !== null) return JSON.parse(stored);
-      return window.matchMedia("(prefers-color-scheme: dark)").matches;
-    }
-    return false;
-  });
+  const [darkMode, setDarkMode] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    const stored = localStorage.getItem("darkMode");
+    const prefersDark = window.matchMedia(
+      "(prefers-color-scheme: dark)",
+    ).matches;
+    const initial = stored !== null ? JSON.parse(stored) : prefersDark;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setDarkMode(initial);
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (darkMode) {
@@ -35,13 +40,13 @@ export default function TrainersPage() {
         />
       </Head>
 
-      {/* Dark Mode Toggle */}
+      {/* Dark Mode Toggle – hydration safe */}
       <button
         onClick={() => setDarkMode(!darkMode)}
         className="fixed top-4 right-4 z-50 p-2 rounded-full bg-gray-200 dark:bg-gray-700 shadow-md hover:shadow-lg transition-all focus:outline-none focus:ring-2 focus:ring-blue-500"
         aria-label="Toggle dark mode"
       >
-        {darkMode ? "☀️" : "🌙"}
+        {mounted ? (darkMode ? "☀️" : "🌙") : "🌓"}
       </button>
 
       <main className="container mx-auto px-4 py-12 max-w-5xl">
@@ -61,8 +66,8 @@ export default function TrainersPage() {
             {data.title}
           </h1>
           <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-            These are the dedicated men and women who have poured into my
-            Master Guide journey — teaching, mentoring, and leading by example.
+            These are the dedicated men and women who have poured into my Master
+            Guide journey — teaching, mentoring, and leading by example.
           </p>
         </div>
 
@@ -82,12 +87,15 @@ export default function TrainersPage() {
                     src={trainer.image}
                     alt={trainer.name}
                     fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     className="object-cover group-hover:scale-105 transition duration-300"
                   />
                 </div>
                 <div className="p-5">
                   <h3 className="text-xl font-bold mb-1">{trainer.name}</h3>
-                  <p className="text-sm text-blue-600 dark:text-blue-400 mb-3">{trainer.role}</p>
+                  <p className="text-sm text-blue-600 dark:text-blue-400 mb-3">
+                    {trainer.role}
+                  </p>
                   <div className="flex flex-wrap gap-2 mb-3">
                     {trainer.subjects.map((subject, i) => (
                       <span
@@ -98,7 +106,9 @@ export default function TrainersPage() {
                       </span>
                     ))}
                   </div>
-                  <p className="text-gray-600 dark:text-gray-300 text-sm">{trainer.bio}</p>
+                  <p className="text-gray-600 dark:text-gray-300 text-sm">
+                    {trainer.bio}
+                  </p>
                 </div>
               </div>
             ))}
@@ -122,13 +132,18 @@ export default function TrainersPage() {
                       src={director.image}
                       alt={director.name}
                       fill
+                      sizes="96px"
                       className="object-cover"
                     />
                   </div>
                   <div>
                     <h3 className="text-xl font-bold">{director.name}</h3>
-                    <p className="text-blue-600 dark:text-blue-400 mb-2">{director.role}</p>
-                    <p className="text-gray-600 dark:text-gray-300 text-sm">{director.bio}</p>
+                    <p className="text-blue-600 dark:text-blue-400 mb-2">
+                      {director.role}
+                    </p>
+                    <p className="text-gray-600 dark:text-gray-300 text-sm">
+                      {director.bio}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -138,7 +153,8 @@ export default function TrainersPage() {
 
         {/* Footer */}
         <footer className="text-center text-gray-500 dark:text-gray-400 text-sm mt-20 pt-8 border-t dark:border-gray-800">
-          © {new Date().getFullYear()} Stephen Magare Ogaro – Master Guide Portfolio
+          © {new Date().getFullYear()} Stephen Magare Ogaro – Master Guide
+          Portfolio
         </footer>
       </main>
     </div>
