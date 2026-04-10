@@ -3,7 +3,9 @@
 import { useState, useEffect } from "react";
 import Head from "next/head";
 import Image from "next/image";
+import Link from "next/link";          // ✅ added
 import data from "@/data/portfolio.json";
+import React from "react";
 
 // ----- Types (unchanged) -----
 type ShareOption = { label: string; url: string };
@@ -360,127 +362,140 @@ export default function Home() {
           </section>
         )}
 
-        {/* Sections – unchanged */}
+        {/* Sections – now each wrapped in a fragment so we can insert the link after the target section */}
         {(data.sections as Section[]).map((section, idx) => {
           const sectionId =
             section.type === "devotion-list"
               ? "devotion-challenge"
               : slugify(section.title);
           return (
-            <section
-              key={idx}
-              id={sectionId}
-              className="mb-16 animate-fade-in scroll-mt-24"
-              style={{ animationDelay: `${idx * 100}ms` }}
-            >
-              <h2 className="text-3xl font-bold border-b-2 border-blue-200 dark:border-blue-700 pb-2 mb-6 inline-block">
-                {section.title}
-              </h2>
+            <React.Fragment key={idx}>
+              <section
+                id={sectionId}
+                className="mb-16 animate-fade-in scroll-mt-24"
+                style={{ animationDelay: `${idx * 100}ms` }}
+              >
+                <h2 className="text-3xl font-bold border-b-2 border-blue-200 dark:border-blue-700 pb-2 mb-6 inline-block">
+                  {section.title}
+                </h2>
 
-              {isListSection(section) && (
-                <ul className="grid grid-cols-1 md:grid-cols-2 gap-2 list-disc list-inside">
-                  {(section.items as string[]).map((item, i) => (
-                    <li key={i} className="text-gray-700 dark:text-gray-300">
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              )}
+                {isListSection(section) && (
+                  <ul className="grid grid-cols-1 md:grid-cols-2 gap-2 list-disc list-inside">
+                    {(section.items as string[]).map((item, i) => (
+                      <li key={i} className="text-gray-700 dark:text-gray-300">
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                )}
 
-              {isCardsSection(section) && (
-                <div className="space-y-6">
-                  {(section.items as PortfolioItem[]).map((item, i) => (
-                    <div
-                      key={i}
-                      className="border border-gray-100 dark:border-gray-800 rounded-xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 bg-white dark:bg-gray-800"
+                {isCardsSection(section) && (
+                  <div className="space-y-6">
+                    {(section.items as PortfolioItem[]).map((item, i) => (
+                      <div
+                        key={i}
+                        className="border border-gray-100 dark:border-gray-800 rounded-xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 bg-white dark:bg-gray-800"
+                      >
+                        <h3 className="text-xl font-semibold mb-2">
+                          {getTitle(item)}
+                        </h3>
+
+                        {hasDescription(item) && item.description && (
+                          <p className="text-gray-600 dark:text-gray-400 mb-3">
+                            {item.description}
+                          </p>
+                        )}
+
+                        {hasLink(item) && (
+                          <a
+                            href={item.link}
+                            className="inline-block mt-2 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium transition focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
+                          >
+                            Learn more →
+                          </a>
+                        )}
+
+                        {hasShareOptions(item) && (
+                          <div className="mt-3 flex flex-wrap gap-2">
+                            {item.shareOptions.map((opt, j) => (
+                              <a
+                                key={j}
+                                href={opt.url}
+                                className="inline-block bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 px-3 py-1 rounded-full text-sm transition focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              >
+                                {opt.label}
+                              </a>
+                            ))}
+                          </div>
+                        )}
+
+                        {hasEvents(item) && (
+                          <div className="mt-4 space-y-3">
+                            {item.events.map((event, k) => (
+                              <div
+                                key={k}
+                                className="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg"
+                              >
+                                <p className="font-medium">{event.name}</p>
+                                <p className="text-sm text-gray-500 dark:text-gray-400">
+                                  {event.date}
+                                </p>
+                                <p className="text-gray-600 dark:text-gray-300">
+                                  {event.description}
+                                </p>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        {hasImages(item) && (
+                          <div className="mt-4 flex gap-2 overflow-x-auto pb-2">
+                            {item.images.map((src, k) => (
+                              <div
+                                key={k}
+                                className="relative h-32 w-32 shrink-0 rounded-lg overflow-hidden cursor-pointer group"
+                                onClick={() => openImageModal(src)}
+                              >
+                                <Image
+                                  src={src}
+                                  alt={`${getTitle(item)} image ${k + 1}`}
+                                  fill
+                                  sizes="128px"
+                                  className="object-cover transition duration-300 group-hover:scale-105"
+                                />
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {isDevotionListSection(section) && (
+                  <div className="text-center mt-8">
+                    <button
+                      onClick={openListModal}
+                      className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
-                      <h3 className="text-xl font-semibold mb-2">
-                        {getTitle(item)}
-                      </h3>
+                      View All 30‑Day Devotions →
+                    </button>
+                  </div>
+                )}
+              </section>
 
-                      {hasDescription(item) && item.description && (
-                        <p className="text-gray-600 dark:text-gray-400 mb-3">
-                          {item.description}
-                        </p>
-                      )}
-
-                      {hasLink(item) && (
-                        <a
-                          href={item.link}
-                          className="inline-block mt-2 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium transition focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
-                        >
-                          Learn more →
-                        </a>
-                      )}
-
-                      {hasShareOptions(item) && (
-                        <div className="mt-3 flex flex-wrap gap-2">
-                          {item.shareOptions.map((opt, j) => (
-                            <a
-                              key={j}
-                              href={opt.url}
-                              className="inline-block bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 px-3 py-1 rounded-full text-sm transition focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            >
-                              {opt.label}
-                            </a>
-                          ))}
-                        </div>
-                      )}
-
-                      {hasEvents(item) && (
-                        <div className="mt-4 space-y-3">
-                          {item.events.map((event, k) => (
-                            <div
-                              key={k}
-                              className="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg"
-                            >
-                              <p className="font-medium">{event.name}</p>
-                              <p className="text-sm text-gray-500 dark:text-gray-400">
-                                {event.date}
-                              </p>
-                              <p className="text-gray-600 dark:text-gray-300">
-                                {event.description}
-                              </p>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-
-                      {hasImages(item) && (
-                        <div className="mt-4 flex gap-2 overflow-x-auto pb-2">
-                          {item.images.map((src, k) => (
-                            <div
-                              key={k}
-                              className="relative h-32 w-32 shrink-0 rounded-lg overflow-hidden cursor-pointer group"
-                              onClick={() => openImageModal(src)}
-                            >
-                              <Image
-                                src={src}
-                                alt={`${getTitle(item)} image ${k + 1}`}
-                                fill
-                                sizes="128px"
-                                className="object-cover transition duration-300 group-hover:scale-105"
-                              />
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {isDevotionListSection(section) && (
-                <div className="text-center mt-8">
-                  <button
-                    onClick={openListModal}
-                    className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              {/* ✅ Diani Easter Reflection link – appears exactly after the "Community Outreach & Service" section */}
+              {section.title === "Community Outreach & Service" && (
+                <div className="text-center mb-16">
+                  <Link
+                    href="/diani-experience"
+                    className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition transform hover:scale-105"
                   >
-                    View All 30‑Day Devotions →
-                  </button>
+                    Read my Diani Easter Reflection →
+                  </Link>
                 </div>
               )}
-            </section>
+            </React.Fragment>
           );
         })}
 
@@ -638,6 +653,7 @@ export default function Home() {
             </div>
           </div>
         )}
+
         {/* Contact Section */}
         <section id="contact" className="mb-16 animate-fade-in scroll-mt-24">
           {/* Banner */}
@@ -734,6 +750,7 @@ export default function Home() {
             </a>
           </div>
         </section>
+
         <footer className="text-center text-gray-500 dark:text-gray-400 text-sm mt-20 pt-8 border-t dark:border-gray-800">
           © {new Date().getFullYear()} {data.name} – Master Guide Portfolio
         </footer>
