@@ -87,11 +87,16 @@ export default function DianiExperience() {
             <h1 className="text-4xl md:text-6xl font-display font-bold text-center bg-linear-to-r from-amber-600 via-orange-500 to-rose-500 dark:from-amber-400 dark:via-orange-400 dark:to-rose-400 bg-clip-text text-transparent mb-4">
               What the Ocean Taught Me
             </h1>
-            <p className="text-center text-gray-500 dark:text-gray-400 mb-8 flex items-center justify-center gap-2">
-              <span className="inline-block w-12 h-px bg-amber-400"></span>
-              Diani Beach, Kenya
-              <span className="inline-block w-12 h-px bg-amber-400"></span>
-            </p>
+            <div className="text-center text-gray-500 dark:text-gray-400 mb-8 flex flex-wrap items-center justify-center gap-2">
+              <span className="inline-block w-8 h-px bg-amber-400"></span>
+              <span className="flex items-center gap-1">📅 3rd – 6th April 2026</span>
+              <span className="inline-block w-8 h-px bg-amber-400"></span>
+              <span className="w-full mt-1 flex items-center justify-center gap-2">
+                <span className="inline-block w-6 h-px bg-amber-400/50"></span>
+                🌊 Diani Beach, Kenya
+                <span className="inline-block w-6 h-px bg-amber-400/50"></span>
+              </span>
+            </div>
 
             <div className="prose prose-lg dark:prose-invert max-w-none">
               <p className="lead text-gray-700 dark:text-gray-200 font-medium text-xl italic border-l-4 border-amber-500 pl-4">
