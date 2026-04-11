@@ -10,7 +10,8 @@ export default function DianiExperience() {
     if (typeof window !== "undefined") {
       const stored = localStorage.getItem("darkMode");
       if (stored !== null) return JSON.parse(stored);
-      return window.matchMedia("(prefers-color-scheme: dark)").matches;
+      // Default to light mode (false) – ignore system preference
+      return false;
     }
     return false;
   });
