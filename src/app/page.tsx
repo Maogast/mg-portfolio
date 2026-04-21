@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Head from "next/head";
 import Image from "next/image";
-import Link from "next/link";          // ✅ added
+import Link from "next/link"; // ✅ added
 import data from "@/data/portfolio.json";
 import React from "react";
 
@@ -348,7 +348,6 @@ export default function Home() {
             {data.mission}
           </blockquote>
         </section>
-
         {/* Dedication */}
         {data.dedication && (
           <section
@@ -361,7 +360,6 @@ export default function Home() {
             </p>
           </section>
         )}
-
         {/* Sections – now each wrapped in a fragment so we can insert the link after the target section */}
         {(data.sections as Section[]).map((section, idx) => {
           const sectionId =
@@ -497,8 +495,16 @@ export default function Home() {
               )}
             </React.Fragment>
           );
-        })}
-
+        })}{" "}
+        <Link
+          href="/sanctuary-honor"
+          className="block p-4 bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-md transition text-center"
+        >
+          <h2 className="text-xl font-semibold">🏛️ Sanctuary Honor</h2>
+          <p className="text-gray-600 dark:text-gray-400">
+            Complete Pathfinder sanctuary requirements.
+          </p>
+        </Link>
         {/* Modals – unchanged */}
         {isDetailModalOpen && selectedDevotion && (
           <div
@@ -561,7 +567,6 @@ export default function Home() {
             </div>
           </div>
         )}
-
         {isListModalOpen && devotionSection && (
           <div
             className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
@@ -624,7 +629,6 @@ export default function Home() {
             </div>
           </div>
         )}
-
         {/* Lightbox Modal for Images */}
         {isImageModalOpen && selectedImage && (
           <div
@@ -653,7 +657,6 @@ export default function Home() {
             </div>
           </div>
         )}
-
         {/* Contact Section */}
         <section id="contact" className="mb-16 animate-fade-in scroll-mt-24">
           {/* Banner */}
@@ -750,7 +753,6 @@ export default function Home() {
             </a>
           </div>
         </section>
-
         <footer className="text-center text-gray-500 dark:text-gray-400 text-sm mt-20 pt-8 border-t dark:border-gray-800">
           © {new Date().getFullYear()} {data.name} – Master Guide Portfolio
         </footer>
