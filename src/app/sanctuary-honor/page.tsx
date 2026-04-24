@@ -137,7 +137,7 @@ export default function SanctuaryHonorPage() {
           </p>
           <div className="bg-white dark:bg-gray-800 p-4 rounded shadow text-center">
             <Image
-              src="/images/sanctuary-hand-drawn.png"
+              src="/images/sanctuary-hand-drawn.jpeg"
               alt="Hand-drawn sanctuary scale model"
               width={800}
               height={600}
