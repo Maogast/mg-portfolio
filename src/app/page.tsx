@@ -7,7 +7,7 @@ import Link from "next/link"; // ✅ added
 import data from "@/data/portfolio.json";
 import React from "react";
 
-// ----- Types (unchanged) -----
+// ----- Types -----
 type ShareOption = { label: string; url: string };
 type EventItem = { name: string; date: string; description: string };
 type BaseItem = { title: string };
@@ -33,13 +33,19 @@ type DevotionItem = {
   song: string;
 };
 
-type Section = {
+// ✅ ADDED: Proper type for Accordion items
+type AccordionItem = {
   title: string;
-  type: "list" | "cards" | "devotion-list";
-  items: PortfolioItem[] | DevotionItem[];
+  content: string;
 };
 
-// Type guards (unchanged)
+type Section = {
+  title: string;
+  type: "list" | "cards" | "devotion-list" | "accordion";
+  items: PortfolioItem[] | DevotionItem[] | AccordionItem[];
+};
+
+// Type guards
 function isListSection(
   section: unknown,
 ): section is Section & { type: "list" } {
@@ -65,6 +71,13 @@ function isDevotionListSection(
 ): section is Section & { type: "devotion-list"; items: DevotionItem[] } {
   return section.type === "devotion-list";
 }
+// ✅ NEW: Added type guard for Accordion
+function isAccordionSection(
+  section: Section,
+): section is Section & { type: "accordion"; items: AccordionItem[] } {
+  return section.type === "accordion";
+}
+
 function isStringItem(item: PortfolioItem): item is string {
   return typeof item === "string";
 }
@@ -97,6 +110,15 @@ function slugify(text: string) {
     .replace(/[^\w-]/g, "");
 }
 
+// Helper to render markdown-like bold text (**text**) and line breaks
+function parseMarkdown(text: string) {
+  return text.split('\n').map((line, i) => {
+    // Parse **text** into <strong>text</strong>
+    const formattedLine = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    return <p key={i} className="mb-3 leading-relaxed" dangerouslySetInnerHTML={{ __html: formattedLine }} />;
+  });
+}
+
 export default function Home() {
   const [selectedDevotion, setSelectedDevotion] = useState<DevotionItem | null>(
     null,
@@ -106,6 +128,9 @@ export default function Home() {
   const [showBackToTop, setShowBackToTop] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("hero");
+
+  // ✅ ADDED: Single state to control Accordion open/close
+  const [activeAccordion, setActiveAccordion] = useState<number | null>(null);
 
   // Lightbox state
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -341,13 +366,33 @@ export default function Home() {
           <p className="text-xl text-gray-600 dark:text-gray-400 mb-4">
             {data.tagline}
           </p>
+          
           <p className="text-gray-700 dark:text-gray-300 leading-relaxed max-w-2xl mx-auto">
-            {data.about}
+            {data.about.split(/(\(https?:\/\/[^\s]+\))/g).map((part, i) => {
+              // Regex to match exactly (https://...)
+              const match = part.match(/^\((https?:\/\/[^\s]+)\)$/);
+              if (match) {
+                return (
+                  <a
+                    key={i}
+                    href={match[1]}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+                  >
+                    {match[1]}
+                  </a>
+                );
+              }
+              return <span key={i}>{part}</span>;
+            })}
           </p>
+
           <blockquote className="italic mt-6 border-l-4 border-blue-500 pl-4 text-gray-600 dark:text-gray-400 max-w-xl mx-auto">
             {data.mission}
           </blockquote>
         </section>
+        
         {/* Dedication */}
         {data.dedication && (
           <section
@@ -360,7 +405,8 @@ export default function Home() {
             </p>
           </section>
         )}
-        {/* Sections – now each wrapped in a fragment so we can insert the link after the target section */}
+        
+        {/* Sections */}
         {(data.sections as Section[]).map((section, idx) => {
           const sectionId =
             section.type === "devotion-list"
@@ -377,6 +423,7 @@ export default function Home() {
                   {section.title}
                 </h2>
 
+                {/* 1. Lists */}
                 {isListSection(section) && (
                   <ul className="grid grid-cols-1 md:grid-cols-2 gap-2 list-disc list-inside">
                     {(section.items as string[]).map((item, i) => (
@@ -387,6 +434,7 @@ export default function Home() {
                   </ul>
                 )}
 
+                {/* 2. Cards */}
                 {isCardsSection(section) && (
                   <div className="space-y-6">
                     {(section.items as PortfolioItem[]).map((item, i) => (
@@ -470,6 +518,7 @@ export default function Home() {
                   </div>
                 )}
 
+                {/* 3. Devotion List */}
                 {isDevotionListSection(section) && (
                   <div className="text-center mt-8">
                     <button
@@ -480,9 +529,53 @@ export default function Home() {
                     </button>
                   </div>
                 )}
+
+                {/* 4. Accordion (Fixed with `activeAccordion` state) */}
+                {isAccordionSection(section) && (
+                  <div className="space-y-4">
+                    {section.items.map((item, i) => {
+                      const isOpen = activeAccordion === i;
+                      return (
+                        <div
+                          key={i}
+                          className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden shadow-sm"
+                        >
+                          <button
+                            onClick={() => setActiveAccordion(isOpen ? null : i)}
+                            className="w-full px-6 py-4 text-left flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          >
+                            <span className="font-semibold text-lg text-gray-900 dark:text-white">
+                              {item.title}
+                            </span>
+                            <svg
+                              className={`w-5 h-5 text-gray-500 transition-transform duration-300 ${
+                                isOpen ? "rotate-180" : ""
+                              }`}
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M19 9l-7 7-7-7"
+                              />
+                            </svg>
+                          </button>
+                          {isOpen && (
+                            <div className="px-6 pb-6 pt-2 border-t border-gray-100 dark:border-gray-700 text-gray-600 dark:text-gray-300">
+                              {parseMarkdown(item.content)}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </section>
 
-              {/* ✅ Diani Easter Reflection link – appears exactly after the "Community Outreach & Service" section */}
+              {/* Diani Easter Reflection link – appears exactly after the "Community Outreach & Service" section */}
               {section.title === "Community Outreach & Service" && (
                 <div className="text-center mb-16">
                   <Link
@@ -505,6 +598,7 @@ export default function Home() {
             Complete Pathfinder sanctuary requirements.
           </p>
         </Link>
+        
         {/* Modals – unchanged */}
         {isDetailModalOpen && selectedDevotion && (
           <div

@@ -6,9 +6,23 @@ import Image from "next/image";
 import Link from "next/link";
 import data from "@/data/trainers.json";
 
+// Define the TypeScript interface for your JSON structure
+interface TeamMember {
+  name: string;
+  role: string;
+  image: string;
+  bio: string;
+  subjects?: string[]; // Optional because only trainers have this
+}
+
+// Cast the imported JSON to the correct type
+const typedData = data as { title: string; leadership_team: TeamMember[] };
+
 export default function TrainersPage() {
   const [darkMode, setDarkMode] = useState(false);
   const [mounted, setMounted] = useState(false);
+  // Track loading errors for individual images
+  const [imageErrors, setImageErrors] = useState<{ [key: string]: boolean }>({});
 
   useEffect(() => {
     const stored = localStorage.getItem("darkMode");
@@ -29,6 +43,27 @@ export default function TrainersPage() {
     }
     localStorage.setItem("darkMode", JSON.stringify(darkMode));
   }, [darkMode]);
+
+  const handleImageError = (name: string) => {
+    setImageErrors((prev) => ({ ...prev, [name]: true }));
+  };
+
+  // Filter the leadership_team into Trainers (those with subjects) and Directors (those without)
+  const trainers = typedData.leadership_team.filter(
+    (member) => member.subjects && member.subjects.length > 0,
+  );
+  const directors = typedData.leadership_team.filter(
+    (member) => !member.subjects || member.subjects.length === 0,
+  );
+
+  // Helper function to get initials for fallback
+  const getInitials = (name: string) => {
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase();
+  };
 
   return (
     <div className="min-h-screen bg-white text-gray-800 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300">
@@ -63,7 +98,7 @@ export default function TrainersPage() {
         {/* Hero Section */}
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            {data.title}
+            {typedData.title}
           </h1>
           <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
             These are the dedicated men and women who have poured into my Master
@@ -74,22 +109,30 @@ export default function TrainersPage() {
         {/* Trainers Section */}
         <section className="mb-16">
           <h2 className="text-2xl font-bold border-b-2 border-blue-200 dark:border-blue-700 pb-2 mb-8 inline-block">
-            🙌 Trainers & Instructors
+            👥 Director & Instructors
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {data.trainers.map((trainer, idx) => (
+            {trainers.map((trainer, idx) => (
               <div
                 key={idx}
                 className="group bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 dark:border-gray-700"
               >
-                <div className="relative h-64 w-full">
-                  <Image
-                    src={trainer.image}
-                    alt={trainer.name}
-                    fill
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    className="object-cover group-hover:scale-105 transition duration-300"
-                  />
+                <div className="relative h-64 w-full bg-gray-100 dark:bg-gray-700">
+                  {imageErrors[trainer.name] ? (
+                    <div className="w-full h-full flex items-center justify-center text-gray-400 dark:text-gray-500 text-3xl font-bold bg-gray-200 dark:bg-gray-600">
+                      {getInitials(trainer.name)}
+                    </div>
+                  ) : (
+                    <Image
+                      src={trainer.image}
+                      alt={trainer.name}
+                      fill
+                      priority={idx === 0} // ✅ FIXED LCP warning: only the first image gets priority
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      className="object-cover group-hover:scale-105 transition duration-300"
+                      onError={() => handleImageError(trainer.name)} // ✅ FIXED 404 errors with fallback
+                    />
+                  )}
                 </div>
                 <div className="p-5">
                   <h3 className="text-xl font-bold mb-1">{trainer.name}</h3>
@@ -97,7 +140,7 @@ export default function TrainersPage() {
                     {trainer.role}
                   </p>
                   <div className="flex flex-wrap gap-2 mb-3">
-                    {trainer.subjects.map((subject, i) => (
+                    {trainer.subjects!.map((subject, i) => (
                       <span
                         key={i}
                         className="text-xs bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-full"
@@ -116,25 +159,33 @@ export default function TrainersPage() {
         </section>
 
         {/* Directors & Coordinators Section */}
-        {data.directors && data.directors.length > 0 && (
+        {directors.length > 0 && (
           <section className="mb-16">
             <h2 className="text-2xl font-bold border-b-2 border-blue-200 dark:border-blue-700 pb-2 mb-8 inline-block">
-              👥 Directors & Coordinators
+              👥 Coordinators & Instructors
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {data.directors.map((director, idx) => (
+              {directors.map((director, idx) => (
                 <div
                   key={idx}
                   className="flex gap-5 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition p-5 border border-gray-100 dark:border-gray-700"
                 >
-                  <div className="relative w-24 h-24 rounded-full overflow-hidden shrink-0">
-                    <Image
-                      src={director.image}
-                      alt={director.name}
-                      fill
-                      sizes="96px"
-                      className="object-cover"
-                    />
+                  <div className="relative w-24 h-24 rounded-full overflow-hidden shrink-0 bg-gray-100 dark:bg-gray-700">
+                    {imageErrors[director.name] ? (
+                      <div className="w-full h-full flex items-center justify-center text-gray-400 dark:text-gray-500 font-bold text-xl bg-gray-200 dark:bg-gray-600">
+                        {getInitials(director.name)}
+                      </div>
+                    ) : (
+                      <Image
+                        src={director.image}
+                        alt={director.name}
+                        fill
+                        priority={idx === 0 && directors.length > 0} // ✅ Prioritize first director if any
+                        sizes="96px"
+                        className="object-cover"
+                        onError={() => handleImageError(director.name)}
+                      />
+                    )}
                   </div>
                   <div>
                     <h3 className="text-xl font-bold">{director.name}</h3>

@@ -1,19 +1,19 @@
 {
   "title": "Master Guide Trainers & Leaders",
-  "trainers": [
-    {
-      "name": "Elder Ralph Osoti",
-      "role": "Lead Trainer",
-      "subjects": ["Leadership", "Pathfinder History", "Counseling"],
-      "image": "/images/trainers/placeholder.jpg",
-      "bio": "A seasoned elder with decades of youth ministry experience."
-    },
+  "leadership_team": [
     {
       "name": "Mg Emily Bolo",
-      "role": "Prayer Ministry Trainer",
+      "role": "Master Guide Director",
       "subjects": ["Intercessory Prayer", "Spiritual Warfare", "Devotional Life"],
-      "image": "/images/trainers/placeholder.jpg",
-      "bio": "Passionate about leading others into deeper prayer."
+      "image": "/images/trainers/emily.jpeg",
+      "bio": "Passionate about leading others into deeper prayer. Has been appointed as the Director of the Master Guide program."
+    },
+    {
+      "name": "Elder Ralph Osoti",
+      "role": "Elder in Charge (MG)",
+      "subjects": ["Leadership", "Pathfinder History", "Adventurer Club", "Counseling"],
+      "image": "/images/trainers/ralph.jpeg",
+      "bio": "A seasoned elder with decades of youth ministry experience. He is the Elder overseeing the entire Master Guide program."
     },
     {
       "name": "Mg Monica Yom Bullen",
@@ -21,20 +21,18 @@
       "subjects": ["Nutrition", "Physical Wellness", "Healthy Lifestyle"],
       "image": "/images/trainers/yom.jpeg",
       "bio": "Dedicated to promoting holistic health and well-being."
-    }
-  ],
-  "directors": [
-    {
-      "name": "Mg Nancy Lucia",
-      "role": "Master Guide Director",
-      "image": "/images/trainers/placeholder.jpg" ,
-      "bio": "Oversees the Master Guide program, providing vision and guidance."
     },
     {
       "name": "Elder Abraham",
       "role": "Prayer Cell Coordinator",
-      "image": "/images/trainers/placeholder.jpg" ,
-      "bio": "Coordinates the prayer cell network and supports trainers."
+      "image": "/images/trainers/placeholder.jpg",
+      "bio": "Coordinates the prayer cell network and supports the trainers and directors."
+    },
+    {
+      "name": "Mg Nancy Lucia",
+      "role": "MG Group Overseer",
+      "image": "/images/trainers/nancy.jpeg",
+      "bio": "Oversees my Master Guide group where we are five members, providing guidance and mentorship for the team."
     }
   ]
 }
