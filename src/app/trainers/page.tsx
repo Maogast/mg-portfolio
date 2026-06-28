@@ -71,7 +71,7 @@ export default function TrainersPage() {
         <title>Master Guide Trainers & Leaders | Stephen Ogaro</title>
         <meta
           name="description"
-          content="Meet the dedicated trainers and leaders who have guided my Master Guide journey."
+          content="Meet the dedicated trainers and leaders who are guiding my Master Guide journey."
         />
       </Head>
 
@@ -115,7 +115,7 @@ export default function TrainersPage() {
             {trainers.map((trainer, idx) => (
               <div
                 key={idx}
-                className="group bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 dark:border-gray-700"
+                className="group bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden border border-gray-100 dark:border-gray-700"
               >
                 <div className="relative h-64 w-full bg-gray-100 dark:bg-gray-700">
                   {imageErrors[trainer.name] ? (
@@ -149,7 +149,7 @@ export default function TrainersPage() {
                       </span>
                     ))}
                   </div>
-                  <p className="text-gray-600 dark:text-gray-300 text-sm">
+                  <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
                     {trainer.bio}
                   </p>
                 </div>
@@ -158,21 +158,21 @@ export default function TrainersPage() {
           </div>
         </section>
 
-        {/* Directors & Coordinators Section */}
+        {/* Directors & Coordinators Section - NOW MATCHES THE LAYOUT ABOVE */}
         {directors.length > 0 && (
           <section className="mb-16">
             <h2 className="text-2xl font-bold border-b-2 border-blue-200 dark:border-blue-700 pb-2 mb-8 inline-block">
               👥 Coordinators & Instructors
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {directors.map((director, idx) => (
                 <div
                   key={idx}
-                  className="flex gap-5 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition p-5 border border-gray-100 dark:border-gray-700"
+                  className="group bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden border border-gray-100 dark:border-gray-700"
                 >
-                  <div className="relative w-24 h-24 rounded-full overflow-hidden shrink-0 bg-gray-100 dark:bg-gray-700">
+                  <div className="relative h-64 w-full bg-gray-100 dark:bg-gray-700">
                     {imageErrors[director.name] ? (
-                      <div className="w-full h-full flex items-center justify-center text-gray-400 dark:text-gray-500 font-bold text-xl bg-gray-200 dark:bg-gray-600">
+                      <div className="w-full h-full flex items-center justify-center text-gray-400 dark:text-gray-500 text-3xl font-bold bg-gray-200 dark:bg-gray-600">
                         {getInitials(director.name)}
                       </div>
                     ) : (
@@ -180,19 +180,19 @@ export default function TrainersPage() {
                         src={director.image}
                         alt={director.name}
                         fill
-                        priority={idx === 0 && directors.length > 0} // ✅ Prioritize first director if any
-                        sizes="96px"
-                        className="object-cover"
+                        priority={idx === 0 && directors.length > 0}
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        className="object-cover group-hover:scale-105 transition duration-300"
                         onError={() => handleImageError(director.name)}
                       />
                     )}
                   </div>
-                  <div>
-                    <h3 className="text-xl font-bold">{director.name}</h3>
-                    <p className="text-blue-600 dark:text-blue-400 mb-2">
+                  <div className="p-5">
+                    <h3 className="text-xl font-bold mb-1">{director.name}</h3>
+                    <p className="text-sm text-blue-600 dark:text-blue-400 mb-2">
                       {director.role}
                     </p>
-                    <p className="text-gray-600 dark:text-gray-300 text-sm">
+                    <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
                       {director.bio}
                     </p>
                   </div>
