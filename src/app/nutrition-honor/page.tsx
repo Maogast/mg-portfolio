@@ -94,7 +94,7 @@ export default function NutritionHonorPage() {
   const [copied, setCopied] = useState(false);
   const [activeSection, setActiveSection] = useState("");
   const [scrollProgress, setScrollProgress] = useState(0);
-  const [pageUrl, setPageUrl] = useState(""); // ← new state for client‑side URL
+  const [pageUrl, setPageUrl] = useState(""); 
   const sectionRefs = useRef<{ [key: string]: HTMLElement | null }>({});
 
   // Dark mode
@@ -108,10 +108,12 @@ export default function NutritionHonorPage() {
   });
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setMounted(true);
-    // Set the actual page URL only on the client
-    setPageUrl(window.location.href);
+    // Defer state updates to avoid synchronous setState within effect
+    const raf = requestAnimationFrame(() => {
+      setMounted(true);
+      setPageUrl(window.location.href);
+    });
+    return () => cancelAnimationFrame(raf);
   }, []);
 
   useEffect(() => {
@@ -189,15 +191,25 @@ export default function NutritionHonorPage() {
     return "📘";
   };
 
+  // ✅ UPDATED: This now parses **text** into <strong>text</strong> and hides the stars!
   const renderContent = (content: SectionContent) => {
+    // Function to replace **text** with <strong>text</strong>
+    const parseBold = (text: string) => text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
     switch (content.type) {
       case "text":
-        return <p className="mb-4 whitespace-pre-line">{content.value}</p>;
+        // Using dangerouslySetInnerHTML to render the <strong>, while preserving line breaks via whitespace-pre-line
+        return (
+          <p 
+            className="mb-4 whitespace-pre-line" 
+            dangerouslySetInnerHTML={{ __html: parseBold(content.value) }} 
+          />
+        );
       case "list":
         return (
           <ul className="list-disc pl-6 mb-4 space-y-1">
             {content.items.map((item, idx) => (
-              <li key={idx} dangerouslySetInnerHTML={{ __html: item }} />
+              <li key={idx} dangerouslySetInnerHTML={{ __html: parseBold(item) }} />
             ))}
           </ul>
         );

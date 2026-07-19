@@ -598,6 +598,15 @@ export default function Home() {
             Complete Pathfinder sanctuary requirements.
           </p>
         </Link>
+                <Link
+          href="/fire-building-camp-cookery"
+          className="block p-4 bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-md transition text-center"
+        >
+          <h2 className="text-xl font-semibold">🔥 Fire Building & Camp Cookery</h2>
+          <p className="text-gray-600 dark:text-gray-400">
+            Complete the Fire Building & Camp Cookery honor requirements.
+          </p>
+        </Link>
         
         {/* Modals – unchanged */}
         {isDetailModalOpen && selectedDevotion && (
