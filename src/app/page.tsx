@@ -607,6 +607,25 @@ export default function Home() {
             Complete the Fire Building & Camp Cookery honor requirements.
           </p>
         </Link>
+        <Link
+          href="/spiritual-growth-28-beliefs"
+          className="block p-4 bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-md transition text-center"
+        >
+          <h2 className="text-xl font-semibold">📖 Spiritual Growth: 28 Beliefs</h2>
+          <p className="text-gray-600 dark:text-gray-400">
+            Teaching 5 fundamental beliefs to children using &quot;God loves me 28 ways&quot;.
+          </p>
+        </Link>
+
+        <Link
+          href="/temperance-honor"
+          className="block p-4 bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-md transition text-center"
+        >
+          <h2 className="text-xl font-semibold">💧 AY Temperance Honor</h2>
+          <p className="text-gray-600 dark:text-gray-400">
+            Pledge, studies, and project evidence for the Temperance Honor.
+          </p>
+        </Link>
         
         {/* Modals – unchanged */}
         {isDetailModalOpen && selectedDevotion && (
