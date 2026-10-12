@@ -237,6 +237,23 @@ export default function Home() {
       <Head>
         <title>{data.name} – Master Guide Portfolio</title>
         <meta name="description" content="Master Guide portfolio" />
+
+        {/* Open Graph / Facebook / WhatsApp */}
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://magaredev.vercel.app/" />
+        <meta property="og:title" content={`${data.name} – Master Guide Portfolio`} />
+        <meta property="og:description" content={data.tagline || "Master Guide in Training | Portfolio"} />
+        {/* Ensure this URL is absolute and points to your wide profile banner */}
+        <meta property="og:image" content="https://magaredev.vercel.app/images/profile.jpg" />
+        <meta property="og:image:width" content="1600" />
+        <meta property="og:image:height" content="900" />
+
+        {/* Twitter / X */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:url" content="https://magaredev.vercel.app/" />
+        <meta name="twitter:title" content={`${data.name} – Master Guide Portfolio`} />
+        <meta name="twitter:description" content={data.tagline || "Master Guide in Training | Portfolio"} />
+        <meta name="twitter:image" content="https://magaredev.vercel.app/images/profile.jpg" />
       </Head>
 
       {/* Sticky Header */}
