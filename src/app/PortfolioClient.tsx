@@ -122,6 +122,12 @@ const honorModules = [
     desc: "Pledge, studies, and project evidence for the Temperance Honor.",
     color: "from-emerald-500 to-teal-500",
   },
+    {
+    href: "/camping-skills",
+    title: "⛺ Camping Skills I & II",
+    desc: "Wilderness survival, fire building, outdoor etiquette, and camp sanitation notes.",
+    color: "from-green-500 to-emerald-500",
+  },
   {
     href: "/diani-experience",
     title: "🏖️ Diani Easter Reflection",
