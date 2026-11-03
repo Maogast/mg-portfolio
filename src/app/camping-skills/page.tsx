@@ -2,9 +2,13 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image"; // ✅ Added Image import
 
 export default function CampingSkillsPage() {
   const [activeTab, setActiveTab] = useState<"level1" | "level2">("level1");
+  
+  // ✅ State for the certificate lightbox
+  const [isCertModalOpen, setIsCertModalOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100 transition-colors duration-300">
@@ -26,7 +30,7 @@ export default function CampingSkillsPage() {
 
       <main className="container mx-auto px-4 md:px-8 max-w-5xl py-12">
         {/* Hero Section */}
-        <section className="text-center mb-16 animate-fade-in">
+        <section className="text-center mb-12 animate-fade-in">
           <div className="text-6xl mb-6">⛺🔥</div>
           <h1 className="text-4xl md:text-6xl font-extrabold mb-4 bg-linear-to-r from-green-600 via-emerald-600 to-teal-600 bg-clip-text text-transparent">
             Camping Skills Honors
@@ -34,6 +38,60 @@ export default function CampingSkillsPage() {
           <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
             Mastering the wilderness, respecting creation, and building character through outdoor survival and camping etiquette.
           </p>
+        </section>
+
+        {/* ✅ NEW: Certificate of Participation Evidence Section */}
+        <section className="mb-16 animate-fade-in animation-delay-100">
+          <div className="relative bg-white dark:bg-slate-800 rounded-3xl p-6 md:p-8 shadow-xl border border-slate-200 dark:border-slate-700 overflow-hidden group">
+            {/* Decorative background glow */}
+            <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-emerald-500/10 dark:bg-emerald-500/5 rounded-full blur-3xl transition-transform duration-700 group-hover:scale-150 pointer-events-none"></div>
+            
+            <div className="flex flex-col md:flex-row items-center gap-8 relative z-10">
+              {/* Text Content */}
+              <div className="flex-1 text-center md:text-left">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-sm font-bold mb-4">
+                  <span>🏅</span> Official Evidence
+                </div>
+                <h2 className="text-3xl font-extrabold mb-3 text-slate-900 dark:text-white">
+                  Masterguide Campout 2026
+                </h2>
+                <p className="text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">
+                  This certifies my active participation in the Masterguide Campout held at the Laikipia Youth Camp Site. A weekend dedicated to practical outdoor survival, leadership development, and fellowship in God&apos;s creation.
+                </p>
+                <div className="flex flex-wrap justify-center md:justify-start gap-3 text-sm font-medium">
+                  <span className="bg-slate-100 dark:bg-slate-700 px-3 py-1 rounded-lg text-slate-700 dark:text-slate-300">
+                    📍 Laikipia Youth Camp Site
+                  </span>
+                  <span className="bg-slate-100 dark:bg-slate-700 px-3 py-1 rounded-lg text-slate-700 dark:text-slate-300">
+                    📅 15–18 Oct 2026
+                  </span>
+                </div>
+              </div>
+
+              {/* Certificate Image Container */}
+              <div 
+                className="flex-1 w-full max-w-sm md:max-w-md cursor-pointer relative rounded-2xl overflow-hidden shadow-2xl ring-4 ring-emerald-500/20 dark:ring-emerald-400/20 transition-transform duration-300 hover:scale-105"
+                onClick={() => setIsCertModalOpen(true)}
+                title="Click to view full certificate"
+              >
+                <Image 
+                  src="/images/camping/nanyuki-campout.png" 
+                  alt="Masterguide Campout Certificate of Participation for Stephen Ogaro"
+                  width={800}
+                  height={1000}
+                  className="w-full h-auto object-cover"
+                  priority
+                />
+                {/* Hover Overlay */}
+                <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-sm">
+                  <span className="text-white font-bold text-lg bg-black/50 px-4 py-2 rounded-full flex items-center gap-2">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" /></svg>
+                    Click to Enlarge
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
         </section>
 
         {/* Tab Switcher */}
@@ -67,6 +125,41 @@ export default function CampingSkillsPage() {
           {activeTab === "level1" ? <LevelOne /> : <LevelTwo />}
         </div>
       </main>
+
+      {/* ✅ NEW: Full-Screen Certificate Lightbox Modal */}
+      {isCertModalOpen && (
+        <div 
+          className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 md:p-8 animate-fade-in"
+          onClick={() => setIsCertModalOpen(false)}
+        >
+          <div 
+            className="relative w-full max-w-4xl max-h-[90vh] flex items-center justify-center"
+            onClick={(e) => e.stopPropagation()} // Prevent closing when clicking the image itself
+          >
+            {/* Close Button */}
+            <button 
+              onClick={() => setIsCertModalOpen(false)}
+              className="absolute -top-12 right-0 md:-right-12 md:top-0 text-white hover:text-emerald-400 bg-white/10 hover:bg-white/20 p-2 rounded-full backdrop-blur-sm transition-all focus:outline-none"
+              aria-label="Close certificate"
+            >
+              <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            
+            {/* Enlarged Image */}
+            <div className="relative w-full h-full flex items-center justify-center">
+              <Image 
+                src="/images/camping/nanyuki-campout.png"
+                alt="Masterguide Campout Certificate Full Size"
+                width={1200}
+                height={1600}
+                className="rounded-xl object-contain max-h-[85vh] w-auto h-auto shadow-2xl ring-4 ring-emerald-500/30"
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
